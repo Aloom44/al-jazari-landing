@@ -1,21 +1,222 @@
 /* ==========================================================================
-   AETERNA — High-End Luxury Horology Canvas & Interactive Engine
+   AETERNA — High-End Luxury Horology Dynamic Template Engine
    ========================================================================== */
 
+let currentProduct = null;
+
 document.addEventListener('DOMContentLoaded', () => {
+  currentProduct = getCurrentProduct();
+
+  const mainContainer = document.getElementById('main-product-container');
+  const notFoundContainer = document.getElementById('product-404-container');
+
+  // Handle 404 state if slug is invalid or product not found
+  if (!currentProduct) {
+    if (mainContainer) mainContainer.style.display = 'none';
+    if (notFoundContainer) notFoundContainer.style.display = 'flex';
+    document.title = '404 - المنتج غير موجود | AL-JAZARI';
+    return;
+  }
+
+  // Ensure main container is displayed and 404 container is hidden
+  if (mainContainer) mainContainer.style.display = 'block';
+  if (notFoundContainer) notFoundContainer.style.display = 'none';
+
+  // 1. Populate dynamic product DOM content
+  applyProductToDOM(currentProduct);
+
+  // 2. Initialize interactive modules
   initHorologyCanvas();
-  initHeroCarousel();
+  initHeroCarousel(currentProduct.images);
   initStickyMobileBar();
-  initFormHandler();
+  initFormHandler(currentProduct);
   initScrollAnimations();
   initMobileNav();
-  initMetaPixelTracking();
+  initMetaPixelTracking(currentProduct);
 });
 
 /* --------------------------------------------------------------------------
+   0. Dynamic DOM Binding Engine
+   -------------------------------------------------------------------------- */
+function applyProductToDOM(product) {
+  // 1. SEO & Meta Tags
+  document.title = `${product.name} | AL-JAZARI`;
+  
+  const pageMetaDesc = document.getElementById('page-meta-desc');
+  if (pageMetaDesc) pageMetaDesc.setAttribute('content', product.description || `${product.name} - ${product.price} جنيه مع الدفع عند الاستلام والتوصيل لكافة المحافظات.`);
+  
+  const ogTitle = document.getElementById('og-title');
+  if (ogTitle) ogTitle.setAttribute('content', `${product.name} | AL-JAZARI`);
+  
+  const ogDesc = document.getElementById('og-description');
+  if (ogDesc) ogDesc.setAttribute('content', product.description || '');
+
+  const ogImg = document.getElementById('og-image');
+  const firstImg = (product.images && product.images[0]) 
+    ? (typeof product.images[0] === 'string' ? product.images[0] : product.images[0].image)
+    : 'assets/images/watch_aljazari.webp';
+  if (ogImg) ogImg.setAttribute('content', firstImg);
+
+  // 2. Hero Section
+  const eyebrowEl = document.getElementById('hero-brand-eyebrow');
+  if (eyebrowEl) eyebrowEl.textContent = product.hero_badge || `${(product.brand || product.name).toUpperCase()} • HIGH QUALITY`;
+
+  const headlineEl = document.getElementById('hero-headline');
+  if (headlineEl) {
+    headlineEl.innerHTML = `${product.hero_title || product.name} <span id="hero-accent-text" class="hero-accent-highlight">${product.hero_accent || ''}</span>`;
+  }
+
+  const subtextEl = document.getElementById('hero-subtext');
+  if (subtextEl) {
+    if (product.hero_subtext) {
+      subtextEl.textContent = product.hero_subtext;
+    } else {
+      const offerPart = (product.offer && product.offer.enabled)
+        ? ` | قطعتين بـ ${product.offer.price} جنيه (توفير ${product.offer.saving}ج + ${product.shipping_info || 'شحن مجاني'})`
+        : '';
+      subtextEl.textContent = `${product.description} • ${product.price} جنيه (${product.shipping_info || 'شحن مجاني'})${offerPart}`;
+    }
+  }
+
+  // 3. Details & Specifications Section
+  const detailsImg = document.getElementById('details-img');
+  if (detailsImg) {
+    detailsImg.src = product.details_image || firstImg;
+    detailsImg.alt = product.details_title || product.name;
+  }
+
+  const detailsEyebrow = document.getElementById('details-eyebrow');
+  if (detailsEyebrow) detailsEyebrow.textContent = `القسم 01 • تفاصيل الساعة`;
+
+  const detailsTitle = document.getElementById('details-title');
+  if (detailsTitle) detailsTitle.textContent = product.details_title || 'تفاصيل صُممت لتدوم';
+
+  const detailsDesc = document.getElementById('details-description');
+  if (detailsDesc) detailsDesc.textContent = product.details_description || product.description;
+
+  const specsList = document.getElementById('specs-list');
+  const detailsSection = document.getElementById('details');
+  if (specsList) {
+    if (product.features && product.features.length > 0) {
+      specsList.innerHTML = product.features.map(f => `
+        <div class="spec-item">
+          <span class="label">${f.label}</span>
+          <span class="value">${f.value}</span>
+        </div>
+      `).join('');
+      if (detailsSection) detailsSection.style.display = 'block';
+    } else {
+      specsList.innerHTML = '';
+      if (detailsSection) detailsSection.style.display = 'none'; // Requirement 17: Hide empty specs section safely
+    }
+  }
+
+  // 4. Special Offers Section (#offers)
+  const offersSection = document.getElementById('offers');
+  if (offersSection) {
+    if (product.offer && product.offer.enabled) {
+      offersSection.style.display = 'block';
+
+      const singleOfferAmount = document.getElementById('single-offer-amount');
+      if (singleOfferAmount) singleOfferAmount.textContent = product.price;
+
+      const singleOfferFeatures = document.getElementById('single-offer-features');
+      if (singleOfferFeatures && product.single_offer_features) {
+        singleOfferFeatures.innerHTML = product.single_offer_features.map(feat => `<li>✓ ${feat}</li>`).join('');
+      }
+
+      const offerBadge = document.getElementById('offer-badge-label');
+      if (offerBadge) offerBadge.textContent = product.offer.badge || `الأكثر طلباً • توفير ${product.offer.saving} ج.م`;
+
+      const offerAmount = document.getElementById('offer-amount');
+      if (offerAmount) offerAmount.textContent = product.offer.price;
+
+      const offerOldAmount = document.getElementById('offer-old-amount');
+      if (offerOldAmount) offerOldAmount.textContent = `${product.offer.old_price} ج.م`;
+
+      const offerFeatures = document.getElementById('offer-features');
+      if (offerFeatures && product.offer.features) {
+        offerFeatures.innerHTML = product.offer.features.map(feat => `<li>✓ ${feat}</li>`).join('');
+      }
+    } else {
+      offersSection.style.display = 'none'; // Requirement 17: Hide offers section if no offer
+    }
+  }
+
+  // 5. Order Form Options
+  const qtySelect = document.getElementById('customer-quantity');
+  if (qtySelect) {
+    qtySelect.innerHTML = '';
+    const opt1 = document.createElement('option');
+    opt1.value = '1';
+    opt1.setAttribute('data-price', product.price);
+    opt1.selected = true;
+    opt1.textContent = `قطعة واحدة — ${product.price} جنيه (${product.shipping_info || 'شحن مجاني'})`;
+    qtySelect.appendChild(opt1);
+
+    if (product.offer && product.offer.enabled) {
+      const opt2 = document.createElement('option');
+      opt2.value = String(product.offer.quantity || 2);
+      opt2.setAttribute('data-price', product.offer.price);
+      opt2.textContent = `قطعتين (عرض التوفير) — ${product.offer.price} جنيه (توفير ${product.offer.saving}ج + ${product.shipping_info || 'شحن مجاني'})`;
+      qtySelect.appendChild(opt2);
+    }
+  }
+
+  const colorSelectGroup = document.getElementById('color-select-group');
+  const colorSelect = document.getElementById('customer-color');
+  if (colorSelectGroup && colorSelect) {
+    if (product.colors && product.colors.length > 0) {
+      colorSelectGroup.style.display = 'block';
+      colorSelect.innerHTML = product.colors.map((c, idx) => `
+        <option value="${c.name}" data-image="${c.image || ''}" ${idx === 0 ? 'selected' : ''}>${c.name}</option>
+      `).join('');
+    } else {
+      colorSelectGroup.style.display = 'none'; // Requirement 17: Hide color selector if no colors
+    }
+  }
+
+  const orderHeaderDesc = document.getElementById('order-header-desc');
+  if (orderHeaderDesc) {
+    const offerText = (product.offer && product.offer.enabled)
+      ? ` • قطعة بـ ${product.price}ج | قطعتين بـ ${product.offer.price}ج`
+      : ` • قطعة بـ ${product.price}ج`;
+    orderHeaderDesc.textContent = `أكمل بياناتك وسنتواصل معك هاتفياً لتأكيد الطلب • ${product.shipping_info || 'شحن مجاني لجميع المحافظات'}${offerText}`;
+  }
+
+  const submitBtnText = document.getElementById('order-submit-text');
+  if (submitBtnText) {
+    submitBtnText.textContent = `تأكيد الطلب — ${product.price} جنيه (${product.shipping_info || 'شحن مجاني'})`;
+  }
+
+  const orderTrustBadges = document.getElementById('order-trust-badges');
+  if (orderTrustBadges && product.order_trust_badges) {
+    orderTrustBadges.innerHTML = product.order_trust_badges.map(b => `<div class="trust-badge-item">✓ ${b}</div>`).join('');
+  }
+
+  // 6. Sticky CTA Bar
+  const stickyBrand = document.getElementById('sticky-brand');
+  if (stickyBrand) stickyBrand.textContent = product.short_name || product.name;
+
+  const stickyPriceInfo = document.getElementById('sticky-price-info');
+  if (stickyPriceInfo) {
+    const note = (product.offer && product.offer.enabled)
+      ? `(${product.shipping_info || 'شحن مجاني'} - أو قطعتين بـ ${product.offer.price}ج)`
+      : `(${product.shipping_info || 'شحن مجاني'})`;
+    stickyPriceInfo.innerHTML = `${product.price} ج.م <span class="sticky-note">${note}</span>`;
+  }
+
+  // 7. Floating WhatsApp Button
+  const waBtn = document.getElementById('floating-whatsapp-btn');
+  if (waBtn) {
+    const waNum = (product.whatsapp || '201557350728').replace(/\D/g, '');
+    const waMsg = `مرحبًا، أريد الاستفسار عن ${product.name}.`;
+    waBtn.href = `https://wa.me/${waNum}?text=${encodeURIComponent(waMsg)}`;
+  }
+}
+
+/* --------------------------------------------------------------------------
    1. Multi-Layered Horology Background System
-   - Low Opacity (3% - 8%)
-   - Concentric Dial Geometry, Gears, Technical Blueprint Lines
    -------------------------------------------------------------------------- */
 function initHorologyCanvas() {
   const canvas = document.getElementById('watch-canvas-bg');
@@ -43,7 +244,6 @@ function initHorologyCanvas() {
            '160, 120, 60';
   }
 
-  // Layer 4: Gear Silhouette Renderer
   function drawHorologyGear(cx, cy, outerRadius, innerRadius, teeth, rotationAngle, opacity, useSecondary = false) {
     const rgb = useSecondary ? getCanvasSecondaryRgb() : getCanvasPrimaryRgb();
     ctx.save();
@@ -72,7 +272,6 @@ function initHorologyCanvas() {
     ctx.closePath();
     ctx.stroke();
 
-    // Inner Concentric Gear Skeleton Ring
     ctx.beginPath();
     ctx.arc(0, 0, innerRadius * 0.55, 0, Math.PI * 2);
     ctx.stroke();
@@ -80,14 +279,12 @@ function initHorologyCanvas() {
     ctx.restore();
   }
 
-  // Layer 3 & 5: Dial Geometry & Technical Diagram Blueprint
   function drawHorologyDialBlueprint(cx, cy, radius, rotationAngle) {
     const primaryRgb = getCanvasPrimaryRgb();
     const secondaryRgb = getCanvasSecondaryRgb();
     ctx.save();
     ctx.translate(cx, cy);
 
-    // Concentric Dial Rings
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.035)';
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -104,7 +301,6 @@ function initHorologyCanvas() {
     ctx.strokeStyle = `rgba(${primaryRgb}, 0.05)`;
     ctx.stroke();
 
-    // Hour Index Marks
     for (let i = 0; i < 60; i++) {
       const tickAngle = (i * Math.PI) / 30;
       const isMajor = i % 5 === 0;
@@ -119,7 +315,6 @@ function initHorologyCanvas() {
       ctx.stroke();
     }
 
-    // Technical Crosshairs
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
     ctx.beginPath();
     ctx.moveTo(-radius * 1.2, 0);
@@ -128,7 +323,6 @@ function initHorologyCanvas() {
     ctx.lineTo(0, radius * 1.2);
     ctx.stroke();
 
-    // Slow Rotating Hands Silhouette
     ctx.rotate(rotationAngle);
     ctx.beginPath();
     ctx.moveTo(0, 0);
@@ -144,7 +338,6 @@ function initHorologyCanvas() {
     ctx.clearRect(0, 0, width, height);
     angle += 0.001;
 
-    // Render low opacity horology layers across canvas
     drawHorologyDialBlueprint(width * 0.5, height * 0.45, Math.min(width, height) * 0.4, angle * 0.4);
     drawHorologyGear(width * 0.82, height * 0.25, 260, 220, 32, -angle * 0.8, 0.05, false);
     drawHorologyGear(width * 0.12, height * 0.75, 220, 185, 24, angle * 1.1, 0.045, true);
@@ -158,99 +351,7 @@ function initHorologyCanvas() {
 /* --------------------------------------------------------------------------
    2. Dynamic Hero Carousel & Theme Engine
    -------------------------------------------------------------------------- */
-const heroSlides = [
-  {
-    id: "rolex-gold-two-tone",
-    image: "assets/images/watch_aljazari.webp",
-    filter: "none",
-    name: "الإصدار الذهبي الملكي ثنائي النغمة",
-    accentColor: "#CCA462",
-    accentRgb: "204, 164, 98",
-    secondaryAccent: "#BFA15F",
-    canvasPrimaryRgb: "204, 164, 98",
-    canvasSecondaryRgb: "160, 120, 60",
-    glowColor: "rgba(180, 138, 70, 0.14)",
-    ambientGrad: "radial-gradient(circle, rgba(180, 138, 70, 0.14) 0%, rgba(6, 7, 9, 0) 70%)",
-    accentBorder: "rgba(204, 164, 98, 0.32)",
-    textSecondary: "#8E95A5",
-    heroBg: "radial-gradient(circle at 50% 45%, #131211 0%, #060709 72%)",
-    price: "800"
-  },
-  {
-    id: "rolex-champagne-gold",
-    image: "assets/images/watch_champagne_gold.webp",
-    filter: "none",
-    name: "الإصدار الشامبين الذهبي الملكي",
-    accentColor: "#D8B26E",
-    accentRgb: "216, 178, 110",
-    secondaryAccent: "#CCA462",
-    secondaryAccentRgb: "204, 164, 98",
-    canvasPrimaryRgb: "216, 178, 110",
-    canvasSecondaryRgb: "170, 130, 65",
-    glowColor: "rgba(216, 178, 110, 0.15)",
-    ambientGrad: "radial-gradient(circle, rgba(216, 178, 110, 0.15) 0%, rgba(35, 28, 18, 0.10) 45%, rgba(6, 6, 7, 0) 72%)",
-    accentBorder: "rgba(216, 178, 110, 0.35)",
-    textSecondary: "#A39E96",
-    heroBg: "radial-gradient(circle at 50% 45%, #141310 0%, #0c0b08 45%, #060607 80%)",
-    price: "800"
-  },
-  {
-    id: "rolex-blue-emerald",
-    image: "assets/images/watch_blue_emerald.webp",
-    filter: "none",
-    name: "الإصدار الملكي الأزرق والزمردي",
-    accentColor: "#5B9BD5",
-    accentRgb: "91, 155, 213",
-    secondaryAccent: "#CCA462",
-    secondaryAccentRgb: "204, 164, 98",
-    canvasPrimaryRgb: "91, 155, 213",
-    canvasSecondaryRgb: "24, 75, 58",
-    glowColor: "rgba(45, 95, 155, 0.16)",
-    ambientGrad: "radial-gradient(circle, rgba(45, 95, 155, 0.16) 0%, rgba(16, 52, 42, 0.10) 45%, rgba(5, 7, 10, 0) 72%)",
-    accentBorder: "rgba(91, 155, 213, 0.35)",
-    textSecondary: "#8FA0B2",
-    heroBg: "radial-gradient(circle at 50% 45%, #051012 0%, #060B12 45%, #050608 80%)",
-    price: "800"
-  },
-  {
-    id: "rolex-pearl-white",
-    image: "assets/images/watch_pearl_white.webp",
-    filter: "none",
-    name: "الإصدار الأبيض الفضي البلاتيني",
-    accentColor: "#E2E8F0",
-    accentRgb: "226, 232, 240",
-    secondaryAccent: "#94A3B8",
-    secondaryAccentRgb: "148, 163, 184",
-    canvasPrimaryRgb: "215, 225, 235",
-    canvasSecondaryRgb: "75, 85, 99",
-    glowColor: "rgba(220, 228, 238, 0.13)",
-    ambientGrad: "radial-gradient(circle, rgba(220, 228, 238, 0.13) 0%, rgba(30, 36, 44, 0.10) 45%, rgba(5, 6, 8, 0) 72%)",
-    accentBorder: "rgba(226, 232, 240, 0.38)",
-    textSecondary: "#94A3B8",
-    heroBg: "radial-gradient(circle at 50% 45%, #131519 0%, #0d0f13 45%, #050607 80%)",
-    price: "800"
-  },
-  {
-    id: "rolex-trio-collection",
-    image: "assets/images/watch_trio_collection.webp",
-    filter: "none",
-    name: "المجموعة الكاملة — ثلاثية التميز",
-    accentColor: "#E2D9C8",
-    accentRgb: "226, 217, 200",
-    secondaryAccent: "#5B9BD5",
-    secondaryAccentRgb: "91, 155, 213",
-    canvasPrimaryRgb: "226, 217, 200",
-    canvasSecondaryRgb: "91, 155, 213",
-    glowColor: "rgba(226, 217, 200, 0.14)",
-    ambientGrad: "radial-gradient(circle, rgba(226, 217, 200, 0.14) 0%, rgba(45, 95, 155, 0.08) 40%, rgba(6, 7, 9, 0) 72%)",
-    accentBorder: "rgba(226, 217, 200, 0.35)",
-    textSecondary: "#9DA7B3",
-    heroBg: "radial-gradient(circle at 50% 45%, #121316 0%, #0a0b0d 45%, #050607 80%)",
-    price: "800"
-  }
-];
-
-function initHeroCarousel() {
+function initHeroCarousel(slidesData) {
   const stage        = document.getElementById('hero-carousel-stage');
   const imageWrapper = stage && stage.querySelector('.carousel-image-wrapper');
   const counter      = document.getElementById('carousel-counter');
@@ -264,12 +365,60 @@ function initHeroCarousel() {
 
   if (!stage || !imageWrapper || !activeImg) return;
 
-  // ── State ────────────────────────────────────────────────────────
+  const slides = (slidesData && slidesData.length > 0) ? slidesData : [
+    {
+      id: "default-slide",
+      image: "assets/images/watch_aljazari.webp",
+      filter: "none",
+      name: "Watch",
+      accentColor: "#CCA462",
+      price: "800"
+    }
+  ];
+
+  const heroSlides = slides.map((s, idx) => {
+    if (typeof s === 'string') {
+      return {
+        id: `slide-${idx}`,
+        image: s,
+        filter: "none",
+        name: currentProduct ? currentProduct.name : "Watch",
+        accentColor: "#CCA462",
+        accentRgb: "204, 164, 98",
+        secondaryAccent: "#BFA15F",
+        canvasPrimaryRgb: "204, 164, 98",
+        canvasSecondaryRgb: "160, 120, 60",
+        glowColor: "rgba(180, 138, 70, 0.14)",
+        ambientGrad: "radial-gradient(circle, rgba(180, 138, 70, 0.14) 0%, rgba(6, 7, 9, 0) 70%)",
+        accentBorder: "rgba(204, 164, 98, 0.32)",
+        textSecondary: "#8E95A5",
+        heroBg: "radial-gradient(circle at 50% 45%, #131211 0%, #060709 72%)",
+        price: currentProduct ? String(currentProduct.price) : "800"
+      };
+    }
+    return {
+      id: s.id || `slide-${idx}`,
+      image: s.image,
+      filter: s.filter || "none",
+      name: s.name || (currentProduct ? currentProduct.name : "Watch"),
+      accentColor: s.accentColor || "#CCA462",
+      accentRgb: s.accentRgb || "204, 164, 98",
+      secondaryAccent: s.secondaryAccent || "#BFA15F",
+      canvasPrimaryRgb: s.canvasPrimaryRgb || "204, 164, 98",
+      canvasSecondaryRgb: s.canvasSecondaryRgb || "160, 120, 60",
+      glowColor: s.glowColor || "rgba(180, 138, 70, 0.14)",
+      ambientGrad: s.ambientGrad || "radial-gradient(circle, rgba(180, 138, 70, 0.14) 0%, rgba(6, 7, 9, 0) 70%)",
+      accentBorder: s.accentBorder || "rgba(204, 164, 98, 0.32)",
+      textSecondary: s.textSecondary || "#8E95A5",
+      heroBg: s.heroBg || "radial-gradient(circle at 50% 45%, #131211 0%, #060709 72%)",
+      price: s.price || (currentProduct ? String(currentProduct.price) : "800")
+    };
+  });
+
   let currentIndex    = 0;
   let timer           = null;
   let isTransitioning = false;
 
-  // ── Initialise first slide (no animation) ────────────────────────
   const firstSlide = heroSlides[0];
   if (firstSlide.image) {
     activeImg.src          = firstSlide.image;
@@ -296,7 +445,7 @@ function initHeroCarousel() {
   applyTheme(firstSlide);
   updateCounter(0);
 
-  // ── Build thumbnails ─────────────────────────────────────────────
+  // Build thumbnails
   thumbsWrap.innerHTML = '';
   heroSlides.forEach((slide, idx) => {
     const wrap = document.createElement('div');
@@ -309,7 +458,6 @@ function initHeroCarousel() {
       tImg.style.filter = slide.filter;
       wrap.appendChild(tImg);
     } else {
-      // Subtle swatch indicator when awaiting images
       wrap.style.background = `radial-gradient(circle, ${slide.accentColor}33 0%, transparent 80%)`;
       wrap.style.borderColor = `${slide.accentColor}44`;
     }
@@ -320,7 +468,6 @@ function initHeroCarousel() {
     thumbsWrap.appendChild(wrap);
   });
 
-  // ── Core crossfade ────────────────────────────────────────────
   function navigate(newIndex, dir = 'next') {
     if (isTransitioning) return;
     isTransitioning = true;
@@ -328,10 +475,8 @@ function initHeroCarousel() {
     currentIndex = (newIndex + heroSlides.length) % heroSlides.length;
     const slide = heroSlides[currentIndex];
 
-    // ── PHASE 1 (0ms): outgoing image fades out ──────────────────────
     activeImg.className = `hero-watch-img exit-${dir}`;
 
-    // ── PHASE 2 (0ms): position incoming image at enter state (no transition) ─
     if (nextImgEl) {
       if (slide.image) {
         nextImgEl.src = slide.image;
@@ -342,29 +487,20 @@ function initHeroCarousel() {
       }
       nextImgEl.style.filter = slide.filter;
       nextImgEl.className = `hero-watch-img enter-${dir}`;
-      // enter class has transition: none — snaps to start position cleanly
     }
 
-    // Two RAFs guarantee the browser has committed the enter position
-    // before we switch to .active and begin the crossfade transition
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-
-        // ── PHASE 3: incoming image blooms in ────────────────────────
         if (nextImgEl) nextImgEl.className = 'hero-watch-img active';
 
-        // ── PHASE 4 (220ms): counter + thumbs switch mid-crossfade ────────
         setTimeout(() => {
           updateCounter(currentIndex);
           updateThumbs(currentIndex);
           if (priceAmount) priceAmount.textContent = slide.price;
         }, 220);
 
-        // ── PHASE 5 (100ms): theme + ambient glow shift slightly after image ─
         setTimeout(() => applyTheme(slide), 100);
 
-        // ── PHASE 6 (1500ms): collapse after transition fully settles ───────
-        // 1500ms > 1.1s opacity transition — safe margin for completion
         setTimeout(() => {
           if (slide.image) {
             activeImg.src = slide.image;
@@ -387,30 +523,17 @@ function initHeroCarousel() {
     });
   }
 
-  // ── Theme & ambient glow ─────────────────────────────────────────
   function applyTheme(slide) {
     const root = document.documentElement;
     root.style.setProperty('--hero-accent',        slide.accentColor);
     root.style.setProperty('--hero-glow',          slide.glowColor);
     root.style.setProperty('--hero-accent-border', slide.accentBorder);
-    if (slide.accentRgb) {
-      root.style.setProperty('--hero-accent-rgb', slide.accentRgb);
-    }
-    if (slide.secondaryAccent) {
-      root.style.setProperty('--hero-secondary-accent', slide.secondaryAccent);
-    }
-    if (slide.textSecondary) {
-      root.style.setProperty('--hero-subtext-color', slide.textSecondary);
-    }
-    if (slide.canvasPrimaryRgb) {
-      root.style.setProperty('--hero-canvas-primary-rgb', slide.canvasPrimaryRgb);
-    }
-    if (slide.canvasSecondaryRgb) {
-      root.style.setProperty('--hero-canvas-secondary-rgb', slide.canvasSecondaryRgb);
-    }
-    if (slide.heroBg) {
-      root.style.setProperty('--hero-bg-gradient', slide.heroBg);
-    }
+    if (slide.accentRgb) root.style.setProperty('--hero-accent-rgb', slide.accentRgb);
+    if (slide.secondaryAccent) root.style.setProperty('--hero-secondary-accent', slide.secondaryAccent);
+    if (slide.textSecondary) root.style.setProperty('--hero-subtext-color', slide.textSecondary);
+    if (slide.canvasPrimaryRgb) root.style.setProperty('--hero-canvas-primary-rgb', slide.canvasPrimaryRgb);
+    if (slide.canvasSecondaryRgb) root.style.setProperty('--hero-canvas-secondary-rgb', slide.canvasSecondaryRgb);
+    if (slide.heroBg) root.style.setProperty('--hero-bg-gradient', slide.heroBg);
 
     if (ambientGlow) {
       ambientGlow.style.background = slide.ambientGrad ||
@@ -418,7 +541,6 @@ function initHeroCarousel() {
     }
   }
 
-  // ── UI helpers ───────────────────────────────────────────────────
   function updateCounter(idx) {
     if (!counter) return;
     const curr  = String(idx + 1).padStart(2, '0');
@@ -432,7 +554,6 @@ function initHeroCarousel() {
       .forEach((t, i) => t.classList.toggle('active', i === idx));
   }
 
-  // ── Auto-play timer ──────────────────────────────────────────────
   function startTimer() {
     stopTimer();
     timer = setInterval(() => navigate(currentIndex + 1, 'next'), 5500);
@@ -440,14 +561,12 @@ function initHeroCarousel() {
   function stopTimer()  { if (timer) clearInterval(timer); }
   function resetTimer() { stopTimer(); startTimer(); }
 
-  // ── Controls ─────────────────────────────────────────────────────
   prevBtn && prevBtn.addEventListener('click', () => { navigate(currentIndex - 1, 'prev'); resetTimer(); });
   nextBtn && nextBtn.addEventListener('click', () => { navigate(currentIndex + 1, 'next'); resetTimer(); });
 
   stage.addEventListener('mouseenter', stopTimer);
   stage.addEventListener('mouseleave', startTimer);
 
-  // Touch / swipe
   let tx = 0;
   stage.addEventListener('touchstart', e => { tx = e.changedTouches[0].screenX; }, { passive: true });
   stage.addEventListener('touchend',   e => {
@@ -458,7 +577,6 @@ function initHeroCarousel() {
     }
   }, { passive: true });
 
-  // ── Start ────────────────────────────────────────────────────────
   startTimer();
 }
 
@@ -486,24 +604,25 @@ function initStickyMobileBar() {
 /* --------------------------------------------------------------------------
    4. Order Form Handler & Confirmation Popup
    -------------------------------------------------------------------------- */
-function initFormHandler() {
+function initFormHandler(product) {
   const orderForm = document.getElementById('order-form');
   const modalOverlay = document.getElementById('modal-overlay');
   const modalClose = document.getElementById('modal-close');
-  const submitBtnSpan = document.querySelector('#order-submit-btn span');
+  const submitBtnSpan = document.getElementById('order-submit-text');
   const qtySelect = document.getElementById('customer-quantity');
   const colorSelect = document.getElementById('customer-color');
 
   if (!orderForm || !modalOverlay) return;
 
-  // Handle quantity select dropdown change & button text update
   if (qtySelect) {
     qtySelect.addEventListener('change', () => {
-      const qty = qtySelect.value;
+      const qtyVal = qtySelect.value;
       if (submitBtnSpan) {
-        submitBtnSpan.textContent = qty === '2' 
-          ? 'تأكيد الطلب — 1400 جنيه (عرض قطعتين + شحن مجاني)' 
-          : 'تأكيد الطلب — 800 جنيه (شحن مجاني)';
+        if (qtyVal === String(product.offer?.quantity || 2) && product.offer?.enabled) {
+          submitBtnSpan.textContent = `تأكيد الطلب — ${product.offer.price} جنيه (عرض قطعتين + ${product.shipping_info || 'شحن مجاني'})`;
+        } else {
+          submitBtnSpan.textContent = `تأكيد الطلب — ${product.price} جنيه (${product.shipping_info || 'شحن مجاني'})`;
+        }
       }
     });
   }
@@ -519,32 +638,35 @@ function initFormHandler() {
     const address = document.getElementById('customer-address').value.trim();
     
     const qty = qtySelect ? qtySelect.value : '1';
-    const qtyText = qty === '2' ? 'عرض قطعتين (1400 ج.م)' : 'قطعة واحدة (800 ج.م)';
+    const numItems = parseInt(qty, 10) || 1;
+    const isOffer = (numItems === (product.offer?.quantity || 2)) && product.offer?.enabled;
+    const totalPrice = isOffer ? product.offer.price : (product.price * numItems);
+    
+    const color = colorSelect ? colorSelect.value : (product.colors && product.colors[0] ? product.colors[0].name : 'افتراضي');
 
-    const color = colorSelect ? colorSelect.value : 'أسود وذهبي';
-
-    if (!name || !phone || !governorate || !address || !color) {
+    if (!name || !phone || !governorate || !address) {
       alert('يرجى التأكد من ملء جميع البيانات المطلوبة.');
       return;
     }
 
     const modalNameEl = document.getElementById('modal-customer-name');
+    const modalProductNameEl = document.getElementById('modal-product-name');
     const modalPhoneEl = document.getElementById('modal-customer-phone');
     const modalGovEl = document.getElementById('modal-customer-gov');
     const modalColorEl = document.getElementById('modal-customer-color');
 
     if (modalNameEl) modalNameEl.textContent = name;
+    if (modalProductNameEl) modalProductNameEl.textContent = product.name;
     if (modalPhoneEl) modalPhoneEl.textContent = phone2 ? `${phone} / ${phone2}` : phone;
     if (modalGovEl) modalGovEl.textContent = governorate;
+    
+    const qtyText = isOffer ? `عرض ${numItems} قطع (${totalPrice} ج.م)` : `${numItems} قطعة (${totalPrice} ج.م)`;
     if (modalColorEl) modalColorEl.textContent = `${color} — ${qtyText}`;
 
     modalOverlay.classList.add('active');
 
     // --- Save Order to Firebase Database (Ref: admin_orders.html) ---
     const now = new Date();
-    const numItems = qty === '2' ? 2 : 1;
-    const totalValue = numItems === 2 ? 1400 : 800;
-
     const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: true });
 
@@ -554,12 +676,15 @@ function initFormHandler() {
       phone2: phone2 || '',
       governorate: governorate,
       address: address,
-      product: 'ساعة Rolex Oyster هاي كواليتي',
-      productType: 'ساعة Rolex Oyster هاي كواليتي',
+      product: product.name,
+      productType: product.name,
+      productSlug: product.slug,
       color: color,
       quantity: numItems,
-      price: totalValue,
-      notes: `اللون: ${color} | العرض: ${numItems === 2 ? 'عرض قطعتين (1400 ج.م - شحن مجاني)' : 'قطعة واحدة (800 ج.م - شحن مجاني)'}`,
+      unitPrice: isOffer ? (product.offer.price / numItems) : product.price,
+      price: totalPrice,
+      totalPrice: totalPrice,
+      notes: `المنتج: ${product.name} | اللون: ${color} | العرض: ${qtyText}`,
       date: dateStr,
       time: timeStr,
       createdAt: now.toISOString()
@@ -570,16 +695,16 @@ function initFormHandler() {
       const cleanPhone = phone.replace(/\D/g, '');
 
       // Advanced Matching initialization
-      window.fbq('init', '1090362260079762', {
+      window.fbq('init', product.pixel_id || '1090362260079762', {
         ph: cleanPhone,
         fn: name.toLowerCase()
       });
 
       // Track Lead Event
       window.fbq('track', 'Lead', {
-        content_name: 'Rolex Oyster هاي كواليتي',
-        content_category: 'ساعات',
-        value: totalValue,
+        content_name: product.name,
+        content_category: product.category || 'ساعات',
+        value: totalPrice,
         currency: 'EGP',
         num_items: numItems,
         variant: color
@@ -587,10 +712,10 @@ function initFormHandler() {
 
       // Track Purchase Event
       window.fbq('track', 'Purchase', {
-        content_name: 'Rolex Oyster هاي كواليتي',
+        content_name: product.name,
         content_type: 'product',
-        content_ids: ['rolex-oyster'],
-        value: totalValue,
+        content_ids: [product.slug],
+        value: totalPrice,
         currency: 'EGP',
         num_items: numItems,
         variant: color
@@ -599,8 +724,9 @@ function initFormHandler() {
 
     orderForm.reset();
 
-    // Reset default submit button text after form reset
-    if (submitBtnSpan) submitBtnSpan.textContent = 'تأكيد الطلب — 800 جنيه (شحن مجاني)';
+    if (submitBtnSpan) {
+      submitBtnSpan.textContent = `تأكيد الطلب — ${product.price} جنيه (${product.shipping_info || 'شحن مجاني'})`;
+    }
   });
 
   if (modalClose) {
@@ -618,9 +744,16 @@ function initFormHandler() {
 
 /* --------------------------------------------------------------------------
    7. Meta Pixel Professional Tracking Module
-   Pixel ID: 1090362260079762
+   Pixel ID: Dynamic per product
    -------------------------------------------------------------------------- */
-function initMetaPixelTracking() {
+function initMetaPixelTracking(product) {
+  const pixelId = product.pixel_id || '1090362260079762';
+
+  if (typeof window.fbq === 'function') {
+    window.fbq('init', pixelId);
+    window.fbq('track', 'PageView');
+  }
+
   function safeFbq(action, eventName, params) {
     if (typeof window.fbq === 'function') {
       if (params) {
@@ -637,11 +770,11 @@ function initMetaPixelTracking() {
     if (hasFiredViewContent) return;
     hasFiredViewContent = true;
     safeFbq('track', 'ViewContent', {
-      content_name: 'Rolex Oyster هاي كواليتي',
-      content_category: 'ساعات',
+      content_name: product.name,
+      content_category: product.category || 'ساعات',
       content_type: 'product',
-      content_ids: ['rolex-oyster'],
-      value: 800,
+      content_ids: [product.slug],
+      value: product.price,
       currency: 'EGP'
     });
   }
@@ -653,18 +786,18 @@ function initMetaPixelTracking() {
     if (hasFiredInitiateCheckout) return;
     hasFiredInitiateCheckout = true;
     safeFbq('track', 'InitiateCheckout', {
-      content_name: 'Rolex Oyster هاي كواليتي',
-      content_category: 'ساعات',
+      content_name: product.name,
+      content_category: product.category || 'ساعات',
       content_type: 'product',
-      content_ids: ['rolex-oyster'],
-      value: 800,
+      content_ids: [product.slug],
+      value: product.price,
       currency: 'EGP',
       num_items: 1,
       trigger_source: source
     });
   };
 
-  // CTA Click Listeners (All CTA buttons pointing to #order or order action)
+  // CTA Click Listeners
   document.querySelectorAll('a[href="#order"], .sticky-btn-action, .mobile-header-action').forEach(btn => {
     btn.addEventListener('click', () => {
       window.triggerMetaInitiateCheckout('cta_click');
@@ -696,14 +829,15 @@ function initMetaPixelTracking() {
 
   function trackAddToCart() {
     const qtyVal = qtySelect ? qtySelect.value : '1';
-    const numItems = qtyVal === '2' ? 2 : 1;
-    const totalValue = numItems === 2 ? 1400 : 800;
-    const selectedColor = colorSelect ? colorSelect.value : 'أسود وذهبي';
+    const numItems = parseInt(qtyVal, 10) || 1;
+    const isOffer = (numItems === (product.offer?.quantity || 2)) && product.offer?.enabled;
+    const totalValue = isOffer ? product.offer.price : (product.price * numItems);
+    const selectedColor = colorSelect ? colorSelect.value : (product.colors && product.colors[0] ? product.colors[0].name : 'افتراضي');
 
     safeFbq('track', 'AddToCart', {
-      content_name: 'Rolex Oyster هاي كواليتي',
+      content_name: product.name,
       content_type: 'product',
-      content_ids: ['rolex-oyster'],
+      content_ids: [product.slug],
       value: totalValue,
       currency: 'EGP',
       num_items: numItems,
@@ -718,7 +852,7 @@ function initMetaPixelTracking() {
   document.querySelectorAll('.floating-whatsapp-btn, a[href*="wa.me"]').forEach(waBtn => {
     waBtn.addEventListener('click', () => {
       safeFbq('track', 'Contact', {
-        content_name: 'Rolex Oyster هاي كواليتي',
+        content_name: product.name,
         contact_method: 'WhatsApp'
       });
     });
@@ -816,44 +950,85 @@ const firebaseConfig = {
 };
 
 let firebaseDbInstance = null;
-try {
+function getFirebaseDb() {
+  if (firebaseDbInstance) return firebaseDbInstance;
   if (typeof firebase !== 'undefined') {
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      firebaseDbInstance = firebase.database();
+      return firebaseDbInstance;
+    } catch (err) {
+      console.warn('Firebase init exception:', err);
     }
-    firebaseDbInstance = firebase.database();
   }
-} catch (err) {
-  console.warn('Firebase init exception:', err);
+  return null;
 }
 
 function saveOrderToDatabase(orderData) {
-  // 1. Push order to Firebase Realtime Database at 'orders' node
-  if (firebaseDbInstance) {
+  const now = new Date();
+  const timestampNum = Date.now();
+
+  const dbPayload = {
+    name: orderData.name || '',
+    phone: orderData.phone || '',
+    phone2: orderData.phone2 || '',
+    governorate: orderData.governorate || '',
+    address: orderData.address || '',
+    product: orderData.product || (currentProduct ? currentProduct.name : 'ساعة Rolex Oyster هاي كواليتي'),
+    productType: orderData.productType || (currentProduct ? currentProduct.name : 'ساعة Rolex Oyster هاي كواليتي'),
+    productSlug: orderData.productSlug || (currentProduct ? currentProduct.slug : 'rolex-oyster'),
+    color: orderData.color || '',
+    quantity: orderData.quantity || 1,
+    unitPrice: orderData.unitPrice || 0,
+    price: orderData.price || 800,
+    total: orderData.price || 800,
+    size: `${orderData.color || ''} (${orderData.quantity > 1 ? 'عرض' : 'قطعة واحدة'})`,
+    bottleSize: `${orderData.color || ''} (${orderData.quantity > 1 ? 'عرض' : 'قطعة واحدة'})`,
+    notes: orderData.notes || '',
+    date: orderData.date || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`,
+    time: orderData.time || now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', hour12: true }),
+    timestamp: timestampNum,
+    createdAt: now.toISOString()
+  };
+
+  // 1. Primary: Direct HTTPS REST API POST to Firebase Realtime Database
+  fetch('https://herbs-orders-default-rtdb.firebaseio.com/orders.json', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(dbPayload)
+  }).then(res => res.json()).then(data => {
+    console.log('✅ Order saved to Firebase via REST API:', data);
+  }).catch(err => {
+    console.warn('⚠️ REST API push error:', err);
+  });
+
+  // 2. Secondary: Firebase Web SDK push if loaded
+  const db = getFirebaseDb();
+  if (db) {
     try {
-      const dbPayload = {
-        ...orderData,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-      };
-      firebaseDbInstance.ref('orders').push(dbPayload).then(() => {
-        console.log('✅ Order saved to Firebase Database (orders node)');
-      }).catch((err) => {
-        console.error('❌ Firebase push error:', err);
-      });
-    } catch (err) {
-      console.error('❌ Firebase DB exception:', err);
+      db.ref('orders').push({
+        ...dbPayload,
+        timestamp: (typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue)
+          ? firebase.database.ServerValue.TIMESTAMP
+          : timestampNum
+      }).then(() => {
+        console.log('✅ Order saved to Firebase via SDK');
+      }).catch(err => console.warn('Firebase SDK push error:', err));
+    } catch (e) {
+      console.warn('Firebase SDK push exception:', e);
     }
-  } else {
-    console.warn('⚠️ Firebase SDK not loaded, saving to local storage fallback.');
   }
 
-  // 2. Backup to LocalStorage under 'hairOilOrders' for local fallback in admin_orders.html
+  // 3. Backup to LocalStorage under 'hairOilOrders' for local offline fallback
   try {
     const existingOrders = JSON.parse(localStorage.getItem('hairOilOrders') || '[]');
     existingOrders.push({
-      ...orderData,
-      firebaseId: 'local_' + Date.now(),
-      timestamp: Date.now()
+      ...dbPayload,
+      firebaseId: 'local_' + timestampNum
     });
     localStorage.setItem('hairOilOrders', JSON.stringify(existingOrders));
   } catch (err) {

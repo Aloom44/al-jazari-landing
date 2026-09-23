@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AL-JAZARI | لوحة إدارة الساعات</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #060709;
+      --card-bg: #121316;
+      --card-border: rgba(204, 164, 98, 0.2);
+      --gold-primary: #CCA462;
+      --gold-hover: #e0b875;
+      --text-main: #FFFFFF;
+      --text-muted: #8E95A5;
+      --input-bg: #1a1c23;
+      --input-border: rgba(255, 255, 255, 0.12);
+      --danger: #e74c3c;
+      --success: #2ecc71;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Alexandria', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 4rem;
+    }
+
+    /* UI Gate Modal */
+    .pin-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(6, 7, 9, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pin-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      width: 100%; max-width: 400px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* Header */
+    .admin-header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1.25rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      color: var(--gold-primary);
+      letter-spacing: 1px;
+    }
+    .nav-tabs { display: flex; gap: 0.5rem; }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.5rem 1.25rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: rgba(204, 164, 98, 0.12);
+      border-color: var(--gold-primary);
+      color: var(--gold-primary);
+    }
+
+    /* Container */
+    .container { width: 92%; max-width: 1200px; margin: 2rem auto 0; }
+
+    /* Overview KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+    .kpi-num {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      margin-bottom: 0.25rem;
+    }
+    .kpi-label { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* List Controls */
+    .list-controls {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .search-input {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: #fff; padding: 0.6rem 1rem;
+      border-radius: 6px; font-family: inherit; width: 280px;
+    }
+
+    /* Product Table */
+    .table-wrapper {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; text-align: right; }
+    th, td { padding: 1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    th { color: var(--gold-primary); font-size: 0.85rem; background: rgba(0,0,0,0.2); }
+    tr:hover { background: rgba(255,255,255,0.02); }
+
+    .thumb-img {
+      width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid var(--card-border);
+    }
+    .badge {
+      display: inline-block; padding: 0.25rem 0.65rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+    }
+    .badge-published { background: rgba(46, 204, 113, 0.15); color: var(--success); border: 1px solid rgba(46, 204, 113, 0.3); }
+    .badge-draft { background: rgba(142, 149, 165, 0.15); color: var(--text-muted); border: 1px solid rgba(142, 149, 165, 0.3); }
+
+    .action-btn {
+      background: transparent; border: 1px solid var(--input-border); color: #fff;
+      padding: 0.35rem 0.75rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;
+      margin-left: 0.35rem; transition: all 0.2s ease;
+    }
+    .action-btn:hover { border-color: var(--gold-primary); color: var(--gold-primary); }
+    .action-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* Form Styles */
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .form-section-title {
+      font-size: 1.1rem; color: var(--gold-primary);
+      margin-bottom: 1.25rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(204, 164, 98, 0.15);
+    }
+    .form-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.85rem; color: var(--text-muted); }
+    .form-control {
+      background: var(--input-bg); border: 1px solid var(--input-border);
+      color: #fff; padding: 0.65rem 0.85rem; border-radius: 6px;
+      font-family: inherit; font-size: 0.9rem;
+    }
+    .form-control:focus { border-color: var(--gold-primary); outline: none; }
+    textarea.form-control { resize: vertical; min-height: 80px; }
+
+    /* Dynamic Lists (Images, Colors, Specs) */
+    .dynamic-item {
+      display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem;
+      background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 6px; flex-wrap: wrap;
+    }
+
+    .btn-gold {
+      background: var(--gold-primary); color: #000; border: none;
+      padding: 0.65rem 1.5rem; border-radius: 6px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: background 0.3s ease;
+    }
+    .btn-gold:hover { background: var(--gold-hover); }
+    .btn-outline {
+      background: transparent; border: 1px solid var(--card-border); color: #fff;
+      padding: 0.65rem 1.5rem; border-radius: 6px; cursor: pointer; font-family: inherit;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); z-index: 1000; display: none;
+      align-items: center; justify-content: center;
+    }
+    .modal-box {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      padding: 2rem; border-radius: 10px; width: 90%; max-width: 450px; text-align: center;
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 768px) {
+      .admin-header { flex-direction: column; align-items: flex-start; }
+      .search-input { width: 100%; }
+      .dynamic-item { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <!-- Firebase Email/Password Auth Modal -->
+  <div class="pin-modal-overlay" id="auth-modal" style="display: flex;">
+    <div class="pin-card">
+      <h2 style="color: var(--gold-primary); font-family: 'Cinzel', serif; margin-bottom: 0.5rem;">AL-JAZARI ADMIN</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">تسجيل الدخول إلى لوحة إدارة الساعات</p>
+      <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+        <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
+          <label style="font-size: 0.8rem;">البريد الإلكتروني *</label>
+          <input type="email" id="admin-email" class="form-control" placeholder="admin@domain.com" required style="direction: ltr; text-align: left;">
+        </div>
+        <div class="form-group" style="margin-bottom: 1.25rem; text-align: right;">
+          <label style="font-size: 0.8rem;">كلمة المرور *</label>
+          <input type="password" id="admin-password" class="form-control" placeholder="••••••••" required style="direction: ltr; text-align: left;">
+        </div>
+        <div id="login-error-msg" style="color: var(--danger); font-size: 0.8rem; margin-bottom: 1rem; display: none;"></div>
+        <button type="submit" class="btn-gold" id="login-btn" style="width: 100%;">تسجيل الدخول</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="admin-header" style="display: none;">
+    <div class="brand-title">AL-JAZARI HOROLOGY • ADMIN</div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tab-list" onclick="switchView('list')">قائمة الساعات</button>
+      <button class="tab-btn" id="tab-add" onclick="openAddForm()">+ إضافة ساعة جديدة</button>
+      <a href="index.html" target="_blank" class="tab-btn" style="text-decoration: none;">عرض المتجر ↗</a>
+      <button class="tab-btn" style="border-color: var(--danger); color: var(--danger);" onclick="handleAdminLogout()">تسجيل الخروج</button>
+    </div>
+  </header>
+
+  <main class="container" style="display: none;">
+
+    <!-- Overview KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-num" id="kpi-total">1</div>
+        <div class="kpi-label">إجمالي الساعات (Total Watches)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num" id="kpi-published">1</div>
+        <div class="kpi-label">الساعات المنشورة (Published)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num" id="kpi-drafts">0</div>
+        <div class="kpi-label">اللمسودات (Drafts)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-num" id="kpi-pages">1</div>
+        <div class="kpi-label">Landing Pages النشطة</div>
+      </div>
+    </div>
+
+    <!-- VIEW 1: PRODUCTS LIST -->
+    <section id="view-list">
+      <div class="list-controls">
+        <input type="text" id="search-box" class="search-input" placeholder="بحث باسم الساعة أو Slug..." oninput="renderTable()">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <label style="font-size: 0.85rem; color: var(--text-muted);">الحالة:</label>
+          <select id="filter-status" class="form-control" style="width: 140px;" onchange="renderTable()">
+            <option value="all">الكل</option>
+            <option value="published">المنشورة فقط</option>
+            <option value="draft">المسودات فقط</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>الصورة</th>
+              <th>اسم الساعة</th>
+              <th>Slug</th>
+              <th>السعر (أساسي / عرض)</th>
+              <th>الألوان</th>
+              <th>الحالة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="products-table-body">
+            <!-- Dynamic Rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VIEW 2: ADD / EDIT WATCH FORM -->
+    <section id="view-form" style="display: none;">
+      <form id="watch-editor-form" onsubmit="handleFormSubmit(event)">
+        
+        <!-- 1. Basic Information -->
+        <div class="form-card">
+          <div class="form-section-title">1. البيانات الأساسية (Basic Information)</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>اسم الساعة الكامل *</label>
+              <input type="text" id="f-name" class="form-control" placeholder="مثال: ساعة Rolex Oyster هاي كواليتي" required oninput="autoGenerateSlug()">
+            </div>
+            <div class="form-group">
+              <label>الاسم المختصر (Short Name)</label>
+              <input type="text" id="f-short-name" class="form-control" placeholder="مثال: Rolex Oyster">
+            </div>
+            <div class="form-group">
+              <label>الماركة (Brand)</label>
+              <input type="text" id="f-brand" class="form-control" placeholder="ROLEX OYSTER">
+            </div>
+            <div class="form-group">
+              <label>القسم (Category)</label>
+              <input type="text" id="f-category" class="form-control" placeholder="ساعات">
+            </div>
+            <div class="form-group">
+              <label>Slug (الرابط الفريد) *</label>
+              <input type="text" id="f-slug" class="form-control" placeholder="rolex-oyster" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Pricing & Offers -->
+        <div class="form-card">
+          <div class="form-section-title">2. الأسعار والعروض (Pricing & Offers)</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>السعر الأساسي (جنيه) *</label>
+              <input type="number" id="f-price" class="form-control" placeholder="800" required oninput="calcSaving()">
+            </div>
+            <div class="form-group">
+              <label>السعر القديم قبل الخصم (جنيه)</label>
+              <input type="number" id="f-old-price" class="form-control" placeholder="1000">
+            </div>
+            <div class="form-group" style="justify-content: center;">
+              <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: #fff;">
+                <input type="checkbox" id="f-offer-enabled" checked onchange="toggleOfferFields()"> تفعيل عرض القطعتين
+              </label>
+            </div>
+          </div>
+
+          <div id="offer-fields-group" class="form-grid">
+            <div class="form-group">
+              <label>كمية العرض</label>
+              <input type="number" id="f-offer-qty" class="form-control" value="2">
+            </div>
+            <div class="form-group">
+              <label>سعر العرض (جنيه)</label>
+              <input type="number" id="f-offer-price" class="form-control" placeholder="1400" oninput="calcSaving()">
+            </div>
+            <div class="form-group">
+              <label>السعر القديم للعرض (جنيه)</label>
+              <input type="number" id="f-offer-old-price" class="form-control" placeholder="1600" oninput="calcSaving()">
+            </div>
+            <div class="form-group">
+              <label>قيمة التوفير المحسوبة (جنيه)</label>
+              <input type="number" id="f-offer-saving" class="form-control" placeholder="200" readonly>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Copywriting & Descriptions -->
+        <div class="form-card">
+          <div class="form-section-title">3. النصوص والوصف (Content & Copywriting)</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>شارة الهيرو (Hero Eyebrow)</label>
+              <input type="text" id="f-hero-badge" class="form-control" placeholder="ROLEX OYSTER • HIGH QUALITY">
+            </div>
+            <div class="form-group">
+              <label>عنوان الهيرو الأساسي (Hero Title)</label>
+              <input type="text" id="f-hero-title" class="form-control" placeholder="ساعة Rolex Oyster">
+            </div>
+            <div class="form-group">
+              <label>كلمة التمييز الذهبية (Accent Text)</label>
+              <input type="text" id="f-hero-accent" class="form-control" placeholder="هاي كواليتي">
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label>وصف الهيرو الفرعي (Hero Subtext)</label>
+            <textarea id="f-hero-subtext" class="form-control" placeholder="قطعة ميكانيكية استثنائية صُممت بحضور طاغٍ..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>الوصف التفصيلي للساعة (Description)</label>
+            <textarea id="f-description" class="form-control" placeholder="ساعة ميكانيكية فاخرة بتصميم استثنائي..."></textarea>
+          </div>
+        </div>
+
+        <!-- 4. Images & Gallery -->
+        <div class="form-card">
+          <div class="form-section-title">4. صور المعرض (Images & Gallery)</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">الصورة الأولى تُستخدم تلقائياً كـ Hero Image و Thumbnail أساسية.</p>
+          <div id="images-container"></div>
+          <button type="button" class="btn-outline" style="margin-top: 0.5rem;" onclick="addImageField()">+ إضافة صورة جديدة</button>
+        </div>
+
+        <!-- 5. Colors -->
+        <div class="form-card">
+          <div class="form-section-title">5. خيارات الألوان (Color Options)</div>
+          <div id="colors-container"></div>
+          <button type="button" class="btn-outline" style="margin-top: 0.5rem;" onclick="addColorField()">+ إضافة لون جديد</button>
+        </div>
+
+        <!-- 6. Specifications -->
+        <div class="form-card">
+          <div class="form-section-title">6. المواصفات الفنية (Specifications)</div>
+          <div id="specs-container"></div>
+          <button type="button" class="btn-outline" style="margin-top: 0.5rem;" onclick="addSpecField()">+ إضافة خاصية/مواصفة جديدة</button>
+        </div>
+
+        <!-- 7. Contact & Tracking -->
+        <div class="form-card">
+          <div class="form-section-title">7. إعدادات WhatsApp و Meta Pixel</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>رقم WhatsApp للمنتج</label>
+              <input type="text" id="f-whatsapp" class="form-control" value="201557350728">
+            </div>
+            <div class="form-group">
+              <label>Meta Pixel ID للمنتج</label>
+              <input type="text" id="f-pixel-id" class="form-control" value="1090362260079762">
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. SEO & Status -->
+        <div class="form-card">
+          <div class="form-section-title">8. إعدادات SEO وحالة النشر</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>SEO Title</label>
+              <input type="text" id="f-seo-title" class="form-control" placeholder="اتركه فارغاً لاستخدام اسم الساعة">
+            </div>
+            <div class="form-group">
+              <label>حالة النشر (Status) *</label>
+              <select id="f-status" class="form-control">
+                <option value="published">منشور (Published)</option>
+                <option value="draft">مسودة (Draft)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button type="submit" class="btn-gold">حفظ ونشر (Save & Publish)</button>
+          <button type="button" class="btn-outline" onclick="saveAsDraft()">حفظ كمسودة (Save Draft)</button>
+          <button type="button" class="btn-outline" onclick="triggerPreview()">معاينة (Preview)</button>
+          <button type="button" class="btn-outline" style="border-color: var(--danger); color: var(--danger);" onclick="switchView('list')">إلغاء</button>
+        </div>
+
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-backdrop" id="delete-modal">
+    <div class="modal-box">
+      <h3 style="color: var(--gold-primary); margin-bottom: 0.75rem;">تأكيد الحذف</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;" id="delete-confirm-text">هل أنت متأكد من حذف هذه الساعة؟</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button class="btn-gold" style="background: var(--danger); color: #fff;" id="confirm-delete-btn">نعم، احذف</button>
+        <button class="btn-outline" onclick="closeDeleteModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/products.js"></script>
+  <script>
+    // --- Firebase Initialization & Authentication Engine ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyCVJYD2adDrZD2C7jnTjVhiewxVohZzM38",
+        authDomain: "herbs-orders.firebaseapp.com",
+        databaseURL: "https://herbs-orders-default-rtdb.firebaseio.com",
+        projectId: "herbs-orders",
+        storageBucket: "herbs-orders.firebasestorage.app",
+        messagingSenderId: "866663461200",
+        appId: "1:866663461200:web:0b891e0eb53a16c555fc55"
+    };
+
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    // Monitor Firebase Auth State
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().onAuthStateChanged((user) => {
+        const authModal = document.getElementById('auth-modal');
+        const adminHeader = document.querySelector('.admin-header');
+        const mainContainer = document.querySelector('main.container');
+
+        if (user) {
+          console.log('🔒 Admin User Authenticated:', user.email);
+          if (authModal) authModal.style.display = 'none';
+          if (adminHeader) adminHeader.style.display = 'flex';
+          if (mainContainer) mainContainer.style.display = 'block';
+          loadProducts();
+        } else {
+          console.log('🔒 Admin User Signed Out');
+          if (authModal) authModal.style.display = 'flex';
+          if (adminHeader) adminHeader.style.display = 'none';
+          if (mainContainer) mainContainer.style.display = 'none';
+        }
+      });
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('admin-email').value.trim();
+      const password = document.getElementById('admin-password').value;
+      const errorEl = document.getElementById('login-error-msg');
+      const loginBtn = document.getElementById('login-btn');
+
+      if (errorEl) errorEl.style.display = 'none';
+      if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = 'جاري تسجيل الدخول...'; }
+
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          console.log('✅ Logged in successfully:', userCredential.user.email);
+          if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'تسجيل الدخول'; }
+        })
+        .catch((error) => {
+          console.warn('⚠️ Login error:', error.message);
+          if (errorEl) {
+            errorEl.textContent = 'فشل تسجيل الدخول: البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+            errorEl.style.display = 'block';
+          }
+          if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'تسجيل الدخول'; }
+        });
+    }
+
+    function handleAdminLogout() {
+      if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().signOut().then(() => {
+          console.log('✅ Logged out cleanly.');
+        });
+      }
+    }
+
+    // --- State ---
+    let allProducts = [];
+    let editingSlug = null;
+    let pendingDeleteSlug = null;
+
+    // --- View Switching ---
+    function switchView(view) {
+      document.getElementById('view-list').style.display = view === 'list' ? 'block' : 'none';
+      document.getElementById('view-form').style.display = view === 'form' ? 'block' : 'none';
+      document.getElementById('tab-list').classList.toggle('active', view === 'list');
+      document.getElementById('tab-add').classList.toggle('active', view === 'form');
+      if (view === 'list') loadProducts();
+    }
+
+    // --- Data Loading & Rendering ---
+    async function loadProducts() {
+      // 1. Load from PRODUCTS fallback & LocalStorage
+      const localMap = getLocalStorageProducts();
+      let map = { ...PRODUCTS, ...localMap };
+
+      // 2. Load from Firebase if online
+      try {
+        const fbRes = await fetchFirebaseProducts();
+        if (fbRes) map = { ...map, ...fbRes };
+      } catch (e) {
+        console.warn('Firebase fetch fail:', e);
+      }
+
+      allProducts = Object.values(map).map(p => normalizeProduct(p));
+      updateKPIs();
+      renderTable();
+    }
+
+    function updateKPIs() {
+      document.getElementById('kpi-total').textContent = allProducts.length;
+      const pubCount = allProducts.filter(p => p.status === 'published').length;
+      document.getElementById('kpi-published').textContent = pubCount;
+      document.getElementById('kpi-drafts').textContent = allProducts.length - pubCount;
+      document.getElementById('kpi-pages').textContent = pubCount;
+    }
+
+    function renderTable() {
+      const search = document.getElementById('search-box').value.toLowerCase();
+      const filter = document.getElementById('filter-status').value;
+      const tbody = document.getElementById('products-table-body');
+      tbody.innerHTML = '';
+
+      const filtered = allProducts.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(search) || p.slug.toLowerCase().includes(search);
+        const matchesFilter = filter === 'all' || p.status === filter;
+        return matchesSearch && matchesFilter;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-muted); padding: 2rem;">لا توجد ساعات مطابقة.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(p => {
+        const tr = document.createElement('tr');
+        const thumb = (p.images && p.images[0]) ? (typeof p.images[0] === 'string' ? p.images[0] : p.images[0].image) : 'assets/images/watch_aljazari.webp';
+        const isPub = p.status === 'published';
+
+        tr.innerHTML = `
+          <td><img src="${thumb}" class="thumb-img" alt="${p.name}"></td>
+          <td><strong>${p.name}</strong><br><small style="color:var(--text-muted);">${p.brand || ''}</small></td>
+          <td><code>${p.slug}</code></td>
+          <td>${p.price} ج.م ${p.offer && p.offer.enabled ? `<small style="color:var(--gold-primary);">(عرض: ${p.offer.price}ج)</small>` : ''}</td>
+          <td>${p.colors ? p.colors.length : 0} ألوان</td>
+          <td><span class="badge ${isPub ? 'badge-published' : 'badge-draft'}">${isPub ? 'منشور' : 'مسودة'}</span></td>
+          <td>
+            <button class="action-btn" onclick="editWatch('${p.slug}')">تعديل</button>
+            <button class="action-btn" onclick="previewWatch('${p.slug}')">معاينة</button>
+            <button class="action-btn" onclick="copyLink('${p.slug}')">نسخ الرابط</button>
+            <button class="action-btn" onclick="togglePublish('${p.slug}')">${isPub ? 'إلغاء النشر' : 'نشر'}</button>
+            ${p.slug !== 'rolex-oyster' ? `<button class="action-btn danger" onclick="askDelete('${p.slug}')">حذف</button>` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // --- Dynamic Form Management ---
+    function openAddForm() {
+      editingSlug = null;
+      document.getElementById('watch-editor-form').reset();
+      document.getElementById('f-slug').readOnly = false;
+      document.getElementById('images-container').innerHTML = '';
+      document.getElementById('colors-container').innerHTML = '';
+      document.getElementById('specs-container').innerHTML = '';
+
+      // Default fields
+      addImageField('assets/images/watch_aljazari.webp', 'الإصدار الذهبي الرئيسي');
+      addColorField('أسود وذهبي', '#CCA462', 'assets/images/watch_aljazari.webp');
+      addSpecField('الحركة', 'حركة أوتوماتيكية');
+
+      switchView('form');
+    }
+
+    function editWatch(slug) {
+      const p = allProducts.find(item => item.slug === slug);
+      if (!p) return;
+
+      editingSlug = slug;
+      switchView('form');
+
+      document.getElementById('f-name').value = p.name;
+      document.getElementById('f-short-name').value = p.short_name || '';
+      document.getElementById('f-brand').value = p.brand || '';
+      document.getElementById('f-category').value = p.category || '';
+      document.getElementById('f-slug').value = p.slug;
+      document.getElementById('f-slug').readOnly = true;
+
+      document.getElementById('f-price').value = p.price;
+      document.getElementById('f-old-price').value = p.old_price || '';
+
+      const offer = p.offer || {};
+      document.getElementById('f-offer-enabled').checked = offer.enabled !== false;
+      document.getElementById('f-offer-qty').value = offer.quantity || 2;
+      document.getElementById('f-offer-price').value = offer.price || '';
+      document.getElementById('f-offer-old-price').value = offer.old_price || '';
+      document.getElementById('f-offer-saving').value = offer.saving || '';
+
+      document.getElementById('f-hero-badge').value = p.hero_badge || '';
+      document.getElementById('f-hero-title').value = p.hero_title || '';
+      document.getElementById('f-hero-accent').value = p.hero_accent || '';
+      document.getElementById('f-hero-subtext').value = p.hero_subtext || '';
+      document.getElementById('f-description').value = p.description || '';
+
+      document.getElementById('f-whatsapp').value = p.whatsapp || '201557350728';
+      document.getElementById('f-pixel-id').value = p.pixel_id || '1090362260079762';
+      document.getElementById('f-seo-title').value = (p.seo && p.seo.title) || '';
+      document.getElementById('f-status').value = p.status || 'published';
+
+      // Images
+      const imgWrap = document.getElementById('images-container');
+      imgWrap.innerHTML = '';
+      if (p.images && p.images.length > 0) {
+        p.images.forEach(imgObj => {
+          const url = typeof imgObj === 'string' ? imgObj : imgObj.image;
+          const label = typeof imgObj === 'string' ? '' : imgObj.name;
+          addImageField(url, label);
+        });
+      } else {
+        addImageField();
+      }
+
+      // Colors
+      const colorWrap = document.getElementById('colors-container');
+      colorWrap.innerHTML = '';
+      if (p.colors && p.colors.length > 0) {
+        p.colors.forEach(c => addColorField(c.name, c.value, c.image));
+      } else {
+        addColorField();
+      }
+
+      // Specs
+      const specsWrap = document.getElementById('specs-container');
+      specsWrap.innerHTML = '';
+      if (p.features && p.features.length > 0) {
+        p.features.forEach(f => addSpecField(f.label, f.value));
+      } else {
+        addSpecField();
+      }
+
+      calcSaving();
+      toggleOfferFields();
+    }
+
+    function addImageField(url = '', label = '') {
+      const container = document.getElementById('images-container');
+      const div = document.createElement('div');
+      div.className = 'dynamic-item';
+      div.innerHTML = `
+        <input type="text" class="form-control img-url-input" placeholder="رابط الصورة (URL أو Path)" value="${url}" style="flex: 2;">
+        <input type="text" class="form-control img-label-input" placeholder="عنوان الصورة/الإصدار" value="${label}" style="flex: 1;">
+        <button type="button" class="action-btn danger" onclick="this.parentElement.remove()">حذف</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function addColorField(name = '', hex = '#CCA462', img = '') {
+      const container = document.getElementById('colors-container');
+      const div = document.createElement('div');
+      div.className = 'dynamic-item';
+      div.innerHTML = `
+        <input type="text" class="form-control color-name-input" placeholder="اسم اللون (مثال: أسود وذهبي)" value="${name}" style="flex: 2;">
+        <input type="color" class="color-hex-input" value="${hex}" style="width: 45px; height: 38px; border: none; border-radius: 4px; cursor: pointer;">
+        <input type="text" class="form-control color-img-input" placeholder="رابط صورة اللون (اختياري)" value="${img}" style="flex: 2;">
+        <button type="button" class="action-btn danger" onclick="this.parentElement.remove()">حذف</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function addSpecField(label = '', value = '') {
+      const container = document.getElementById('specs-container');
+      const div = document.createElement('div');
+      div.className = 'dynamic-item';
+      div.innerHTML = `
+        <input type="text" class="form-control spec-label-input" placeholder="المواصفة (مثال: الحركة)" value="${label}" style="flex: 1;">
+        <input type="text" class="form-control spec-val-input" placeholder="القيمة (مثال: حركة أوتوماتيكية)" value="${value}" style="flex: 2;">
+        <button type="button" class="action-btn danger" onclick="this.parentElement.remove()">حذف</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function autoGenerateSlug() {
+      if (editingSlug) return;
+      const name = document.getElementById('f-name').value;
+      const slugInput = document.getElementById('f-slug');
+      slugInput.value = name.toLowerCase().trim()
+        .replace(/[^\w\u0600-\u06FF\s-]/g, '')
+        .replace(/[\s_]+/g, '-');
+    }
+
+    function calcSaving() {
+      const price = Number(document.getElementById('f-price').value) || 0;
+      const qty = Number(document.getElementById('f-offer-qty').value) || 2;
+      const offerPrice = Number(document.getElementById('f-offer-price').value) || 0;
+      const offerOld = Number(document.getElementById('f-offer-old-price').value) || (price * qty);
+
+      const saving = offerOld > offerPrice ? (offerOld - offerPrice) : 0;
+      document.getElementById('f-offer-saving').value = saving;
+    }
+
+    function toggleOfferFields() {
+      const enabled = document.getElementById('f-offer-enabled').checked;
+      document.getElementById('offer-fields-group').style.display = enabled ? 'grid' : 'none';
+    }
+
+    // --- Save & Publish ---
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      await saveProductProcess('published');
+    }
+
+    async function saveAsDraft() {
+      await saveProductProcess('draft');
+    }
+
+    async function saveProductProcess(forcedStatus = null) {
+      const slug = document.getElementById('f-slug').value.trim().toLowerCase();
+      if (!slug) { alert('يرجى تحديد Slug للمنتج'); return; }
+
+      // Extract Images
+      const imgNodes = document.querySelectorAll('#images-container .dynamic-item');
+      const images = [];
+      imgNodes.forEach((node, idx) => {
+        const u = node.querySelector('.img-url-input').value.trim();
+        const l = node.querySelector('.img-label-input').value.trim();
+        if (u) {
+          images.push({
+            id: `img-${idx}`,
+            image: u,
+            name: l || document.getElementById('f-name').value,
+            accentColor: "#CCA462"
+          });
+        }
+      });
+
+      // Extract Colors
+      const colorNodes = document.querySelectorAll('#colors-container .dynamic-item');
+      const colors = [];
+      colorNodes.forEach(node => {
+        const n = node.querySelector('.color-name-input').value.trim();
+        const h = node.querySelector('.color-hex-input').value;
+        const i = node.querySelector('.color-img-input').value.trim();
+        if (n) colors.push({ name: n, value: h, image: i });
+      });
+
+      // Extract Specs
+      const specNodes = document.querySelectorAll('#specs-container .dynamic-item');
+      const features = [];
+      specNodes.forEach(node => {
+        const l = node.querySelector('.spec-label-input').value.trim();
+        const v = node.querySelector('.spec-val-input').value.trim();
+        if (l && v) features.push({ label: l, value: v });
+      });
+
+      const offerEnabled = document.getElementById('f-offer-enabled').checked;
+
+      const productPayload = {
+        identity: {
+          slug,
+          name: document.getElementById('f-name').value.trim(),
+          short_name: document.getElementById('f-short-name').value.trim() || document.getElementById('f-name').value.trim(),
+          brand: document.getElementById('f-brand').value.trim() || 'AL-JAZARI',
+          category: document.getElementById('f-category').value.trim() || 'ساعات'
+        },
+        pricing: {
+          price: Number(document.getElementById('f-price').value) || 0,
+          old_price: Number(document.getElementById('f-old-price').value) || 0
+        },
+        offer: {
+          enabled: offerEnabled,
+          quantity: Number(document.getElementById('f-offer-qty').value) || 2,
+          price: Number(document.getElementById('f-offer-price').value) || 0,
+          old_price: Number(document.getElementById('f-offer-old-price').value) || 0,
+          saving: Number(document.getElementById('f-offer-saving').value) || 0
+        },
+        content: {
+          hero_badge: document.getElementById('f-hero-badge').value.trim(),
+          hero_title: document.getElementById('f-hero-title').value.trim(),
+          hero_accent: document.getElementById('f-hero-accent').value.trim(),
+          hero_subtext: document.getElementById('f-hero-subtext').value.trim(),
+          description: document.getElementById('f-description').value.trim()
+        },
+        images,
+        colors,
+        features,
+        contact: {
+          whatsapp: document.getElementById('f-whatsapp').value.trim() || '201557350728'
+        },
+        tracking: {
+          pixel_id: document.getElementById('f-pixel-id').value.trim() || '1090362260079762'
+        },
+        seo: {
+          title: document.getElementById('f-seo-title').value.trim() || document.getElementById('f-name').value.trim()
+        },
+        status: forcedStatus || document.getElementById('f-status').value,
+        updatedAt: new Date().toISOString()
+      };
+
+      await saveProductToDatabase(productPayload);
+      alert('تم حفظ البيانات بنجاح في Firebase والـ LocalStorage Cache!');
+      switchView('list');
+    }
+
+    // --- Quick Actions ---
+    async function togglePublish(slug) {
+      const p = allProducts.find(item => item.slug === slug);
+      if (!p) return;
+      p.status = p.status === 'published' ? 'draft' : 'published';
+      await saveProductToDatabase(p);
+      loadProducts();
+    }
+
+    function previewWatch(slug) {
+      window.open(`index.html?product=${slug}&preview=true`, '_blank');
+    }
+
+    function triggerPreview() {
+      const slug = document.getElementById('f-slug').value.trim().toLowerCase();
+      if (slug) window.open(`index.html?product=${slug}&preview=true`, '_blank');
+    }
+
+    function copyLink(slug) {
+      const url = `${window.location.origin}${window.location.pathname.replace('admin.html', '')}index.html?product=${slug}`;
+      navigator.clipboard.writeText(url).then(() => {
+        alert(`تم نسخ الرابط الحقيقي للمنتج:\n${url}`);
+      }).catch(() => {
+        prompt('انسخ الرابط التالي:', url);
+      });
+    }
+
+    function askDelete(slug) {
+      pendingDeleteSlug = slug;
+      document.getElementById('delete-confirm-text').textContent = `هل أنت متأكد من حذف المنتج (${slug}) من Firebase والـ Cache؟`;
+      document.getElementById('delete-modal').style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+      pendingDeleteSlug = null;
+      document.getElementById('delete-modal').style.display = 'none';
+    }
+
+    document.getElementById('confirm-delete-btn').onclick = async function() {
+      if (pendingDeleteSlug) {
+        await deleteProductFromDatabase(pendingDeleteSlug);
+        closeDeleteModal();
+        loadProducts();
+      }
+    };
+
+    // Init handled via firebase.auth().onAuthStateChanged
+  </script>
+</body>
+</html>

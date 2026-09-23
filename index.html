@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AL-JAZARI | تفاصيل تصنع الحضور</title>
-  <meta name="description" content="ساعة ميكانيكية فاخرة بتصميم استثنائي وحضور جذاب. 800 جنيه مع الدفع عند الاستلام والتوصيل لكافة المحافظات.">
+  <title id="page-title">AL-JAZARI | تفاصيل تصنع الحضور</title>
+  <meta name="description" id="page-meta-desc" content="ساعة ميكانيكية فاخرة بتصميم استثنائي وحضور جذاب. 800 جنيه مع الدفع عند الاستلام والتوصيل لكافة المحافظات.">
+  <meta property="og:title" id="og-title" content="Rolex Oyster | AL-JAZARI">
+  <meta property="og:description" id="og-description" content="ساعة ميكانيكية فاخرة بتصميم استثنائي وحضور جذاب. 800 جنيه مع الدفع عند الاستلام والتوصيل لكافة المحافظات.">
+  <meta property="og:image" id="og-image" content="assets/images/watch_aljazari.webp">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,9 +27,10 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1090362260079762');
-    fbq('track', 'PageView');
   </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1090362260079762&ev=PageView&noscript=1"
+  /></noscript>
   <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1090362260079762&ev=PageView&noscript=1"
   /></noscript>
@@ -80,382 +84,398 @@
     </div>
   </header>
 
-  <!-- Mobile Navigation Drawer (Direct body child for fixed overlay) -->
-  <div class="mobile-nav-drawer" id="mobile-nav-drawer" aria-hidden="true">
-    <div class="mobile-nav-backdrop" id="mobile-nav-backdrop"></div>
-    <div class="mobile-nav-panel">
-      <div class="mobile-nav-panel-top">
-        <img src="assets/images/aljazari_logo.png" alt="AL-JAZARI" class="mobile-nav-panel-logo" width="120" height="120">
-        <button class="mobile-nav-close" id="mobile-nav-close" aria-label="إغلاق القائمة">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      </div>
-
-      <nav class="mobile-nav-menu">
-        <a href="#hero" class="mobile-nav-link">
-          <span class="nav-num">01</span>
-          <span class="nav-text">المجموعة</span>
-        </a>
-        <a href="#details" class="mobile-nav-link">
-          <span class="nav-num">02</span>
-          <span class="nav-text">تفاصيل الساعة</span>
-        </a>
-        <a href="#order" class="mobile-nav-link highlight">
-          <span class="nav-num">03</span>
-          <span class="nav-text">اقتناء الساعة</span>
-        </a>
-      </nav>
-
-      <div class="mobile-nav-panel-bottom">
-        <div class="mobile-nav-tagline">AL-JAZARI • TIMELESS CRAFT</div>
-        <div class="mobile-nav-desc">دقة صناعة الساعات الميكانيكية الراقية</div>
-      </div>
-    </div>
+  <!-- Clean 404 Error State Container (Hidden by default) -->
+  <div id="product-404-container" style="display:none; text-align:center; padding: 8rem 1.5rem 6rem; background: #060709; color: #ffffff; min-height: 70vh; flex-direction: column; align-items: center; justify-content: center;">
+    <h1 style="font-size: 3rem; font-family: 'Cinzel', serif; color: var(--gold-primary, #CCA462); margin-bottom: 1rem;">المنتج غير موجود</h1>
+    <p style="font-size: 1.15rem; color: #8E95A5; max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.6;">
+      عذراً، لم نتمكن من العثور على الصفحة أو الساعة المطلوبة. قد يكون الرابط غير صحيح أو انتهى العرض.
+    </p>
+    <a href="index.html" class="btn-editorial" style="display: inline-block; padding: 0.85rem 2.5rem;">
+      <span>عرض الساعة المعتمدة</span>
+    </a>
   </div>
 
-  <!-- Cinematic Hero Section -->
-  <section class="hero-section" id="hero">
-    <div class="hero-ambient-glow" id="hero-ambient-glow"></div>
+  <!-- Main Product Landing Container (Holds all template content) -->
+  <div id="main-product-container">
 
-    <div class="container" style="display: flex; flex-direction: column; align-items: center;">
-      
-      <!-- Editorial Eyebrow & Headline -->
-      <span class="hero-brand-eyebrow">ROLEX OYSTER • HIGH QUALITY</span>
-      <h1 class="hero-headline">ساعة Rolex Oyster <span id="hero-accent-text" class="hero-accent-highlight">هاي كواليتي</span></h1>
-      <p class="hero-subtext">
-        قطعة ميكانيكية استثنائية صُممت بحضور طاغٍ • 800 جنيه (شحن مجاني) | قطعتين بـ 1400 جنيه (توفير 200ج + شحن مجاني)
-      </p>
-
-      <!-- Centered Dynamic Product Image Carousel Stage -->
-      <div class="hero-product-stage" id="hero-carousel-stage">
-        
-        <!-- Counter Badge -->
-        <div class="carousel-counter-badge" id="carousel-counter">01 / 05</div>
-
-        <!-- Image Slides Wrapper -->
-        <div class="carousel-image-wrapper">
-          <img id="carousel-active-img" src="assets/images/watch_aljazari.webp" alt="Rolex Datejust Royal Gold Watch" class="hero-watch-img active" width="500" height="500">
-          <img id="carousel-next-img" src="assets/images/watch_aljazari.webp" alt="Rolex Datejust Royal Gold Watch" class="hero-watch-img" width="500" height="500">
+    <!-- Mobile Navigation Drawer (Direct body child for fixed overlay) -->
+    <div class="mobile-nav-drawer" id="mobile-nav-drawer" aria-hidden="true">
+      <div class="mobile-nav-backdrop" id="mobile-nav-backdrop"></div>
+      <div class="mobile-nav-panel">
+        <div class="mobile-nav-panel-top">
+          <img src="assets/images/aljazari_logo.png" alt="AL-JAZARI" class="mobile-nav-panel-logo" width="120" height="120">
+          <button class="mobile-nav-close" id="mobile-nav-close" aria-label="إغلاق القائمة">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
         </div>
 
-        <!-- Shadow Reflection -->
-        <div class="hero-watch-shadow"></div>
+        <nav class="mobile-nav-menu">
+          <a href="#hero" class="mobile-nav-link">
+            <span class="nav-num">01</span>
+            <span class="nav-text">المجموعة</span>
+          </a>
+          <a href="#details" class="mobile-nav-link">
+            <span class="nav-num">02</span>
+            <span class="nav-text">تفاصيل الساعة</span>
+          </a>
+          <a href="#order" class="mobile-nav-link highlight">
+            <span class="nav-num">03</span>
+            <span class="nav-text">اقتناء الساعة</span>
+          </a>
+        </nav>
 
-        <!-- Minimal Prev/Next Nav Controls -->
-        <button class="carousel-nav-btn prev" id="carousel-prev-btn" aria-label="الصورة السابقة">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <button class="carousel-nav-btn next" id="carousel-next-btn" aria-label="الصورة التالية">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+        <div class="mobile-nav-panel-bottom">
+          <div class="mobile-nav-tagline">AL-JAZARI • TIMELESS CRAFT</div>
+          <div class="mobile-nav-desc">دقة صناعة الساعات الميكانيكية الراقية</div>
+        </div>
+      </div>
+    </div>
 
-        <!-- Minimal Thumbnails Indicator -->
-        <div class="carousel-thumbnails-wrapper" id="carousel-thumbnails"></div>
+    <!-- Cinematic Hero Section -->
+    <section class="hero-section" id="hero">
+      <div class="hero-ambient-glow" id="hero-ambient-glow"></div>
+
+      <div class="container" style="display: flex; flex-direction: column; align-items: center;">
+        
+        <!-- Editorial Eyebrow & Headline -->
+        <span class="hero-brand-eyebrow" id="hero-brand-eyebrow">ROLEX OYSTER • HIGH QUALITY</span>
+        <h1 class="hero-headline" id="hero-headline">ساعة Rolex Oyster <span id="hero-accent-text" class="hero-accent-highlight">هاي كواليتي</span></h1>
+        <p class="hero-subtext" id="hero-subtext">
+          قطعة ميكانيكية استثنائية صُممت بحضور طاغٍ • 800 جنيه (شحن مجاني) | قطعتين بـ 1400 جنيه (توفير 200ج + شحن مجاني)
+        </p>
+
+        <!-- Centered Dynamic Product Image Carousel Stage -->
+        <div class="hero-product-stage" id="hero-carousel-stage">
+          
+          <!-- Counter Badge -->
+          <div class="carousel-counter-badge" id="carousel-counter">01 / 05</div>
+
+          <!-- Image Slides Wrapper -->
+          <div class="carousel-image-wrapper">
+            <img id="carousel-active-img" src="assets/images/watch_aljazari.webp" alt="Watch" class="hero-watch-img active" width="500" height="500">
+            <img id="carousel-next-img" src="assets/images/watch_aljazari.webp" alt="Watch" class="hero-watch-img" width="500" height="500">
+          </div>
+
+          <!-- Shadow Reflection -->
+          <div class="hero-watch-shadow"></div>
+
+          <!-- Minimal Prev/Next Nav Controls -->
+          <button class="carousel-nav-btn prev" id="carousel-prev-btn" aria-label="الصورة السابقة">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="carousel-nav-btn next" id="carousel-next-btn" aria-label="الصورة التالية">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+
+          <!-- Minimal Thumbnails Indicator -->
+          <div class="carousel-thumbnails-wrapper" id="carousel-thumbnails"></div>
+
+        </div>
+
+        <!-- Price & Refined CTA -->
+        <div class="hero-action-group">
+          <a href="#order" class="btn-editorial" id="hero-cta-btn">
+            <span>اطلب العرض الآن</span>
+          </a>
+
+          <div class="hero-micro-service" id="hero-trust-bar">
+            الدفع عند الاستلام • شحن لكافة المحافظات • معاينة الشحنة قبل الدفع
+          </div>
+        </div>
 
       </div>
+    </section>
 
-      <!-- Price & Refined CTA -->
-      <div class="hero-action-group">
-        <a href="#order" class="btn-editorial" id="hero-cta-btn">
+    <!-- Divider -->
+    <div class="editorial-divider"></div>
+
+    <!-- Editorial Section 01: The Details -->
+    <section class="editorial-section" id="details">
+      <div class="container">
+        
+        <div class="feature-editorial-grid">
+          <div class="feature-frame">
+            <img id="details-img" src="assets/images/watch_strap_v2.webp" alt="تفاصيل صُممت لتدوم" loading="lazy">
+          </div>
+          
+          <div class="feature-meta">
+            <span class="hero-brand-eyebrow" id="details-eyebrow">القسم 01 • تفاصيل الساعة</span>
+            <h3 id="details-title">تفاصيل صُممت لتدوم</h3>
+            <p id="details-description">
+              تصميم كلاسيكي بحضور عصري، يجمع بين الحركة الأوتوماتيكية والتفاصيل المعدنية الدقيقة، مع تشطيبات تمنح الساعة مظهرًا فاخرًا ومتوازنًا.
+            </p>
+
+            <div class="specs-inline-list" id="specs-list">
+              <div class="spec-item">
+                <span class="label">الحركة</span>
+                <span class="value">حركة أوتوماتيكية</span>
+              </div>
+              <div class="spec-item">
+                <span class="label">الخامة</span>
+                <span class="value">ستانلس ستيل</span>
+              </div>
+              <div class="spec-item">
+                <span class="label">الزجاج</span>
+                <span class="value">زجاج كريستالي عالي الجودة</span>
+              </div>
+              <div class="spec-item">
+                <span class="label">السوار</span>
+                <span class="value">سوار ستانلس ستيل</span>
+              </div>
+              <div class="spec-item">
+                <span class="label">الإطار</span>
+                <span class="value">إطار فلوتد بتفاصيل دقيقة</span>
+              </div>
+              <div class="spec-item">
+                <span class="label">التاريخ</span>
+                <span class="value">نافذة تاريخ عند موضع الساعة 3</span>
+              </div>
+              <div class="spec-item">
+                <span class="label">الظهر</span>
+                <span class="value">ظهر شفاف يُظهر تفاصيل الحركة</span>
+              </div>
+              <div class="spec-item">
+                <span class="label">المرفقات</span>
+                <span class="value">تأتي مع بوكس فاخر</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Special Offer Highlight Section -->
+    <section class="offer-highlight-section" id="offers">
+      <div class="container">
+        <div class="offer-banner-card">
+          <span class="offer-eyebrow" id="offer-eyebrow">عرض لفترة محدودة • الشحن مجاني لكافة المحافظات</span>
+          <h2 class="offer-main-title" id="offer-main-title">اختر العرض المناسب لك</h2>
+          
+          <div class="offer-pricing-grid" id="offer-pricing-grid">
+            <!-- Option 1: 1 Piece -->
+            <div class="offer-card" id="single-offer-card">
+              <div class="offer-badge-label">عرض القطعة الواحدة</div>
+              <div class="offer-card-price">
+                <span class="amount" id="single-offer-amount">800</span>
+                <span class="currency">جنيه</span>
+              </div>
+              <ul class="offer-features-list" id="single-offer-features">
+                <li>✓ ساعة Rolex Oyster هاي كواليتي باللون المفضل لك</li>
+                <li>✓ شاملة علبة الساعة الفاخرة</li>
+                <li>✓ معاينة وفحص قبل الدفع</li>
+              </ul>
+              <a href="#order" class="btn-editorial offer-btn">اطلب العرض الآن</a>
+            </div>
+
+            <!-- Option 2: 2 Pieces (Best Value) -->
+            <div class="offer-card featured" id="featured-offer-card">
+              <div class="offer-badge-label gold" id="offer-badge-label">الأكثر طلباً • توفير 200 ج.م</div>
+              <div class="offer-card-price">
+                <span class="amount" id="offer-amount">1400</span>
+                <span class="currency">جنيه</span>
+                <span class="old-price" id="offer-old-amount">1600 ج.م</span>
+              </div>
+              <ul class="offer-features-list" id="offer-features">
+                <li>✓ قطعتين بالألوان المختارة</li>
+                <li>✓ شاملة علبتين فاخرتين</li>
+                <li>✓ توفير 200 جنيه حصرياً</li>
+              </ul>
+              <a href="#order" class="btn-editorial offer-btn highlight">اطلب العرض الآن</a>
+            </div>
+          </div>
+
+          <div class="offer-trust-ribbon" id="offer-trust-ribbon">
+            <span>✓ الدفع عند الاستلام</span>
+            <span class="dot">•</span>
+            <span>✓ معاينة الشحنة قبل الدفع</span>
+            <span class="dot">•</span>
+            <span>✓ شحن لكافة المحافظات</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Editorial Order Section -->
+    <section class="editorial-section" id="order">
+      <div class="container">
+        
+        <div class="editorial-header">
+          <span class="section-num">ORDER NOW</span>
+          <h2 id="order-header-title">اطلب ساعتك الآن</h2>
+          <p id="order-header-desc">أكمل بياناتك وسنتواصل معك هاتفياً لتأكيد الطلب • شحن مجاني لجميع المحافظات • قطعة بـ 800ج | قطعتين بـ 1400ج</p>
+        </div>
+
+        <div class="order-editorial-wrapper">
+          <form id="order-form">
+            
+            <!-- 1. Full Name -->
+            <div class="form-group-editorial">
+              <label for="customer-name">الاسم بالكامل *</label>
+              <input type="text" id="customer-name" class="input-editorial" placeholder="أدخل اسمك الثلاثي" required>
+            </div>
+
+            <!-- 2. Primary Phone -->
+            <div class="form-group-editorial">
+              <label for="customer-phone">رقم الهاتف *</label>
+              <input type="tel" id="customer-phone" class="input-editorial" placeholder="01xxxxxxxxx" required>
+            </div>
+
+            <!-- 3. Secondary Phone (Optional) -->
+            <div class="form-group-editorial">
+              <label for="customer-phone-2">
+                <span>رقم هاتف آخر</span>
+                <span class="optional-badge">(اختياري)</span>
+              </label>
+              <input type="tel" id="customer-phone-2" class="input-editorial" placeholder="01xxxxxxxxx">
+            </div>
+
+            <!-- 4. Governorate -->
+            <div class="form-group-editorial select-group-editorial">
+              <label for="customer-governorate">المحافظة *</label>
+              <div class="select-wrapper">
+                <select id="customer-governorate" class="input-editorial select-editorial" required>
+                  <option value="" disabled selected>اختر المحافظة *</option>
+                  <option value="القاهرة">القاهرة</option>
+                  <option value="الجيزة">الجيزة</option>
+                  <option value="الإسكندرية">الإسكندرية</option>
+                  <option value="الدقهلية">الدقهلية</option>
+                  <option value="البحر الأحمر">البحر الأحمر</option>
+                  <option value="البحيرة">البحيرة</option>
+                  <option value="الفيوم">الفيوم</option>
+                  <option value="الغربية">الغربية</option>
+                  <option value="الإسماعيلية">الإسماعيلية</option>
+                  <option value="المنوفية">المنوفية</option>
+                  <option value="المنيا">المنيا</option>
+                  <option value="القليوبية">القليوبية</option>
+                  <option value="الوادي الجديد">الوادي الجديد</option>
+                  <option value="السويس">السويس</option>
+                  <option value="أسوان">أسوان</option>
+                  <option value="أسيوط">أسيوط</option>
+                  <option value="بني سويف">بني سويف</option>
+                  <option value="بورسعيد">بورسعيد</option>
+                  <option value="دمياط">دمياط</option>
+                  <option value="الشرقية">الشرقية</option>
+                  <option value="جنوب سيناء">جنوب سيناء</option>
+                  <option value="كفر الشيخ">كفر الشيخ</option>
+                  <option value="مطروح">مطروح</option>
+                  <option value="الأقصر">الأقصر</option>
+                  <option value="قنا">قنا</option>
+                  <option value="شمال سيناء">شمال سيناء</option>
+                  <option value="سوهاج">سوهاج</option>
+                </select>
+                <span class="select-arrow">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- 5. Detailed Address -->
+            <div class="form-group-editorial">
+              <label for="customer-address">العنوان التفصيلي *</label>
+              <input type="text" id="customer-address" class="input-editorial" placeholder="المنطقة، اسم الشارع، رقم العقار" required>
+            </div>
+
+            <!-- 6. Quantity & Offer Selection Dropdown -->
+            <div class="form-group-editorial select-group-editorial" id="quantity-select-group">
+              <label for="customer-quantity">اختر الكمية والعرض *</label>
+              <div class="select-wrapper">
+                <select id="customer-quantity" class="input-editorial select-editorial" required>
+                  <option value="1" data-price="800" selected>قطعة واحدة — 800 جنيه (شحن مجاني)</option>
+                  <option value="2" data-price="1400">قطعتين (عرض التوفير) — 1400 جنيه (توفير 200ج + شحن مجاني)</option>
+                </select>
+                <span class="select-arrow">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- 7. Color Selection Dropdown -->
+            <div class="form-group-editorial select-group-editorial" id="color-select-group">
+              <label for="customer-color">اختر اللون *</label>
+              <div class="select-wrapper">
+                <select id="customer-color" class="input-editorial select-editorial" required>
+                  <option value="أسود وذهبي" selected>أسود وذهبي</option>
+                  <option value="أزرق وفضي">أزرق وفضي</option>
+                  <option value="شامبين وذهبي">شامبين وذهبي</option>
+                  <option value="فضي وأبيض مع تفاصيل زرقاء">فضي وأبيض مع تفاصيل زرقاء</option>
+                </select>
+                <span class="select-arrow">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- 8. Submit CTA -->
+            <button type="submit" class="btn-editorial order-btn-full" id="order-submit-btn">
+              <span id="order-submit-text">تأكيد الطلب — 800 جنيه (شحن مجاني)</span>
+            </button>
+            
+            <!-- Trust Badges List -->
+            <div class="order-trust-badges" id="order-trust-badges">
+              <div class="trust-badge-item">✓ الدفع عند الاستلام</div>
+              <div class="trust-badge-item">✓ معاينة وفحص الشحنة قبل الدفع</div>
+              <div class="trust-badge-item">✓ شحن مجاني وسريع خلال 24–48 ساعة لكافة المحافظات</div>
+              <div class="trust-badge-item">✓ إمكانية الاستبدال والاسترجاع حسب سياسة المتجر</div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-content">
+        <div class="footer-brand-title">AL-JAZARI • HOROLOGY</div>
+        <div class="footer-accent-line"></div>
+        <p class="footer-copyright" dir="ltr">© 2026 AL-JAZARI. ALL RIGHTS RESERVED.</p>
+      </div>
+    </footer>
+
+    <!-- Universal Sticky CTA Bar -->
+    <div class="sticky-cta-bar" id="sticky-cta-bar">
+      <div class="container sticky-cta-content">
+        <div class="sticky-offer-text">
+          <span class="sticky-brand" id="sticky-brand">Rolex Oyster</span>
+          <span class="sticky-separator">•</span>
+          <span class="sticky-price-info" id="sticky-price-info">800 ج.م <span class="sticky-note">(شحن مجاني - أو قطعتين بـ 1400ج)</span></span>
+        </div>
+        <a href="#order" class="btn-editorial sticky-btn-action">
           <span>اطلب العرض الآن</span>
         </a>
-
-        <div class="hero-micro-service">
-          الدفع عند الاستلام • شحن لكافة المحافظات • معاينة الشحنة قبل الدفع
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Divider -->
-  <div class="editorial-divider"></div>
-
-  <!-- Editorial Section 01: The Details -->
-  <section class="editorial-section" id="details">
-    <div class="container">
-      
-      <div class="feature-editorial-grid">
-        <div class="feature-frame">
-          <img src="assets/images/watch_strap_v2.webp" alt="تفاصيل صُممت لتدوم" loading="lazy">
-        </div>
-        
-        <div class="feature-meta">
-          <span class="hero-brand-eyebrow">القسم 01 • تفاصيل الساعة</span>
-          <h3>تفاصيل صُممت لتدوم</h3>
-          <p>
-            تصميم كلاسيكي بحضور عصري، يجمع بين الحركة الأوتوماتيكية والتفاصيل المعدنية الدقيقة، مع تشطيبات تمنح الساعة مظهرًا فاخرًا ومتوازنًا.
-          </p>
-
-          <div class="specs-inline-list">
-            <div class="spec-item">
-              <span class="label">الحركة</span>
-              <span class="value">حركة أوتوماتيكية</span>
-            </div>
-            <div class="spec-item">
-              <span class="label">الخامة</span>
-              <span class="value">ستانلس ستيل</span>
-            </div>
-            <div class="spec-item">
-              <span class="label">الزجاج</span>
-              <span class="value">زجاج كريستالي عالي الجودة</span>
-            </div>
-            <div class="spec-item">
-              <span class="label">السوار</span>
-              <span class="value">سوار ستانلس ستيل</span>
-            </div>
-            <div class="spec-item">
-              <span class="label">الإطار</span>
-              <span class="value">إطار فلوتد بتفاصيل دقيقة</span>
-            </div>
-            <div class="spec-item">
-              <span class="label">التاريخ</span>
-              <span class="value">نافذة تاريخ عند موضع الساعة 3</span>
-            </div>
-            <div class="spec-item">
-              <span class="label">الظهر</span>
-              <span class="value">ظهر شفاف يُظهر تفاصيل الحركة</span>
-            </div>
-            <div class="spec-item">
-              <span class="label">المرفقات</span>
-              <span class="value">تأتي مع بوكس فاخر</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- Special Offer Highlight Section -->
-  <section class="offer-highlight-section" id="offers">
-    <div class="container">
-      <div class="offer-banner-card">
-        <span class="offer-eyebrow">عرض لفترة محدودة • الشحن مجاني لكافة المحافظات</span>
-        <h2 class="offer-main-title">اختر العرض المناسب لك</h2>
-        
-        <div class="offer-pricing-grid">
-          <!-- Option 1: 1 Piece -->
-          <div class="offer-card">
-            <div class="offer-badge-label">عرض القطعة الواحدة</div>
-            <div class="offer-card-price">
-              <span class="amount">800</span>
-              <span class="currency">جنيه</span>
-            </div>
-            <ul class="offer-features-list">
-              <li>✓ ساعة Rolex Oyster هاي كواليتي باللون المفضل لك</li>
-              <li>✓ شاملة علبة الساعة الفاخرة</li>
-              <li>✓ معاينة وفحص قبل الدفع</li>
-            </ul>
-            <a href="#order" class="btn-editorial offer-btn">اطلب العرض الآن</a>
-          </div>
-
-          <!-- Option 2: 2 Pieces (Best Value) -->
-          <div class="offer-card featured">
-            <div class="offer-badge-label gold">الأكثر طلباً • توفير 200 ج.م</div>
-            <div class="offer-card-price">
-              <span class="amount">1400</span>
-              <span class="currency">جنيه</span>
-              <span class="old-price">1600 ج.م</span>
-            </div>
-            <ul class="offer-features-list">
-              <li>✓ قطعتين بالألوان المختارة</li>
-              <li>✓ شاملة علبتين فاخرتين</li>
-              <li>✓ توفير 200 جنيه حصرياً</li>
-            </ul>
-            <a href="#order" class="btn-editorial offer-btn highlight">اطلب العرض الآن</a>
-          </div>
-        </div>
-
-        <div class="offer-trust-ribbon">
-          <span>✓ الدفع عند الاستلام</span>
-          <span class="dot">•</span>
-          <span>✓ معاينة الشحنة قبل الدفع</span>
-          <span class="dot">•</span>
-          <span>✓ شحن لكافة المحافظات</span>
-        </div>
       </div>
     </div>
-  </section>
 
-  <!-- Editorial Order Section -->
-  <section class="editorial-section" id="order">
-    <div class="container">
-      
-      <div class="editorial-header">
-        <span class="section-num">ORDER NOW</span>
-        <h2>اطلب ساعتك الآن</h2>
-        <p>أكمل بياناتك وسنتواصل معك هاتفياً لتأكيد الطلب • شحن مجاني لجميع المحافظات • قطعة بـ 800ج | قطعتين بـ 1400ج</p>
+    <!-- Floating WhatsApp Contact Button -->
+    <a id="floating-whatsapp-btn" href="https://wa.me/201557350728?text=%D9%85%D8%B1%D8%AD%D8%A8%D9%8B%D8%A7%D9%8C%20%D8%A3%D8%B1%D9%8C%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%B3%D8%A7%D8%B9%D8%A9%20Rolex%20Oyster%20%D9%87%D8%A7%D9%8A%20%D9%83%D9%88%D8%A7%D9%84%D9%8A%D8%AA%D9%8A%20%D9%88%D8%A7%D9%84%D8%B9%D8%B1%D9%88%D8%B6%20%D8%A7%D9%84%D9%85%D8%AA%D8%A7%D8%AD%D8%A9" class="floating-whatsapp-btn" target="_blank" rel="noopener noreferrer" aria-label="تواصل معنا عبر واتساب">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+      </svg>
+      <span class="whatsapp-label">تحدث معنا</span>
+    </a>
+
+    <!-- Order Confirmation Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-icon-symbol">✓</div>
+        <h3 style="font-size: 1.5rem; margin-bottom: 0.75rem;">تم تسجيل طلبك بنجاح</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">
+          شكراً لك <strong id="modal-customer-name" style="color: var(--gold-primary);"></strong>. تم تأكيد طلب <span id="modal-product-name" style="color: var(--gold-primary);">الساعة</span> باللون (<span id="modal-customer-color" style="color: var(--gold-primary);">أسود وذهبي</span>) لمدينة <span id="modal-customer-gov"></span>.
+        </p>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem;">
+          سيتواصل معك فريق خدمة العملاء على الرقم (<span id="modal-customer-phone"></span>) لتنسيق موعد الشحن.
+        </p>
+        <button class="btn-editorial" id="modal-close" style="width: 100%;">تم</button>
       </div>
-
-      <div class="order-editorial-wrapper">
-        <form id="order-form">
-          
-          <!-- 1. Full Name -->
-          <div class="form-group-editorial">
-            <label for="customer-name">الاسم بالكامل *</label>
-            <input type="text" id="customer-name" class="input-editorial" placeholder="أدخل اسمك الثلاثي" required>
-          </div>
-
-          <!-- 2. Primary Phone -->
-          <div class="form-group-editorial">
-            <label for="customer-phone">رقم الهاتف *</label>
-            <input type="tel" id="customer-phone" class="input-editorial" placeholder="01xxxxxxxxx" required>
-          </div>
-
-          <!-- 3. Secondary Phone (Optional) -->
-          <div class="form-group-editorial">
-            <label for="customer-phone-2">
-              <span>رقم هاتف آخر</span>
-              <span class="optional-badge">(اختياري)</span>
-            </label>
-            <input type="tel" id="customer-phone-2" class="input-editorial" placeholder="01xxxxxxxxx">
-          </div>
-
-          <!-- 4. Governorate -->
-          <div class="form-group-editorial select-group-editorial">
-            <label for="customer-governorate">المحافظة *</label>
-            <div class="select-wrapper">
-              <select id="customer-governorate" class="input-editorial select-editorial" required>
-                <option value="" disabled selected>اختر المحافظة *</option>
-                <option value="القاهرة">القاهرة</option>
-                <option value="الجيزة">الجيزة</option>
-                <option value="الإسكندرية">الإسكندرية</option>
-                <option value="الدقهلية">الدقهلية</option>
-                <option value="البحر الأحمر">البحر الأحمر</option>
-                <option value="البحيرة">البحيرة</option>
-                <option value="الفيوم">الفيوم</option>
-                <option value="الغربية">الغربية</option>
-                <option value="الإسماعيلية">الإسماعيلية</option>
-                <option value="المنوفية">المنوفية</option>
-                <option value="المنيا">المنيا</option>
-                <option value="القليوبية">القليوبية</option>
-                <option value="الوادي الجديد">الوادي الجديد</option>
-                <option value="السويس">السويس</option>
-                <option value="أسوان">أسوان</option>
-                <option value="أسيوط">أسيوط</option>
-                <option value="بني سويف">بني سويف</option>
-                <option value="بورسعيد">بورسعيد</option>
-                <option value="دمياط">دمياط</option>
-                <option value="الشرقية">الشرقية</option>
-                <option value="جنوب سيناء">جنوب سيناء</option>
-                <option value="كفر الشيخ">كفر الشيخ</option>
-                <option value="مطروح">مطروح</option>
-                <option value="الأقصر">الأقصر</option>
-                <option value="قنا">قنا</option>
-                <option value="شمال سيناء">شمال سيناء</option>
-                <option value="سوهاج">سوهاج</option>
-              </select>
-              <span class="select-arrow">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-              </span>
-            </div>
-          </div>
-
-          <!-- 5. Detailed Address -->
-          <div class="form-group-editorial">
-            <label for="customer-address">العنوان التفصيلي *</label>
-            <input type="text" id="customer-address" class="input-editorial" placeholder="المنطقة، اسم الشارع، رقم العقار" required>
-          </div>
-
-          <!-- 6. Quantity & Offer Selection Dropdown -->
-          <div class="form-group-editorial select-group-editorial">
-            <label for="customer-quantity">اختر الكمية والعرض *</label>
-            <div class="select-wrapper">
-              <select id="customer-quantity" class="input-editorial select-editorial" required>
-                <option value="1" data-price="800" selected>قطعة واحدة — 800 جنيه (شحن مجاني)</option>
-                <option value="2" data-price="1400">قطعتين (عرض التوفير) — 1400 جنيه (توفير 200ج + شحن مجاني)</option>
-              </select>
-              <span class="select-arrow">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-              </span>
-            </div>
-          </div>
-
-          <!-- 7. Color Selection Dropdown -->
-          <div class="form-group-editorial select-group-editorial">
-            <label for="customer-color">اختر اللون *</label>
-            <div class="select-wrapper">
-              <select id="customer-color" class="input-editorial select-editorial" required>
-                <option value="أسود وذهبي" selected>أسود وذهبي</option>
-                <option value="أزرق وفضي">أزرق وفضي</option>
-                <option value="شامبين وذهبي">شامبين وذهبي</option>
-                <option value="فضي وأبيض مع تفاصيل زرقاء">فضي وأبيض مع تفاصيل زرقاء</option>
-              </select>
-              <span class="select-arrow">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-              </span>
-            </div>
-          </div>
-
-          <!-- 8. Submit CTA -->
-          <button type="submit" class="btn-editorial order-btn-full" id="order-submit-btn">
-            <span>تأكيد الطلب — 800 جنيه (شحن مجاني)</span>
-          </button>
-          
-          <!-- Trust Badges List -->
-          <div class="order-trust-badges">
-            <div class="trust-badge-item">✓ الدفع عند الاستلام</div>
-            <div class="trust-badge-item">✓ معاينة وفحص الشحنة قبل الدفع</div>
-            <div class="trust-badge-item">✓ شحن مجاني وسريع خلال 24–48 ساعة لكافة المحافظات</div>
-            <div class="trust-badge-item">✓ إمكانية الاستبدال والاسترجاع حسب سياسة المتجر</div>
-          </div>
-        </form>
-      </div>
-
     </div>
-  </section>
 
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="container footer-content">
-      <div class="footer-brand-title">AL-JAZARI • HOROLOGY</div>
-      <div class="footer-accent-line"></div>
-      <p class="footer-copyright" dir="ltr">© 2026 AL-JAZARI. ALL RIGHTS RESERVED.</p>
-    </div>
-  </footer>
+  </div> <!-- End #main-product-container -->
 
-  <!-- Universal Sticky CTA Bar -->
-  <div class="sticky-cta-bar" id="sticky-cta-bar">
-    <div class="container sticky-cta-content">
-      <div class="sticky-offer-text">
-        <span class="sticky-brand">Rolex Oyster</span>
-        <span class="sticky-separator">•</span>
-        <span class="sticky-price-info">800 ج.م <span class="sticky-note">(شحن مجاني - أو قطعتين بـ 1400ج)</span></span>
-      </div>
-      <a href="#order" class="btn-editorial sticky-btn-action">
-        <span>اطلب العرض الآن</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- Floating WhatsApp Contact Button -->
-  <a href="https://wa.me/201557350728?text=%D9%85%D8%B1%D8%AD%D8%A8%D9%8B%D8%A7%D9%8C%20%D8%A3%D8%B1%D9%8C%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%B3%D8%A7%D8%B9%D8%A9%20Rolex%20Oyster%20%D9%87%D8%A7%D9%8A%20%D9%83%D9%88%D8%A7%D9%84%D9%8A%D8%AA%D9%8A%20%D9%88%D8%A7%D9%84%D8%B9%D8%B1%D9%88%D8%B6%20%D8%A7%D9%84%D9%85%D8%AA%D8%A7%D8%AD%D8%A9" class="floating-whatsapp-btn" target="_blank" rel="noopener noreferrer" aria-label="تواصل معنا عبر واتساب">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-    </svg>
-    <span class="whatsapp-label">تحدث معنا</span>
-  </a>
-
-  <!-- Order Confirmation Modal -->
-  <div class="modal-overlay" id="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-icon-symbol">✓</div>
-      <h3 style="font-size: 1.5rem; margin-bottom: 0.75rem;">تم تسجيل طلبك بنجاح</h3>
-      <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">
-        شكراً لك <strong id="modal-customer-name" style="color: var(--gold-primary);"></strong>. تم تأكيد طلب الساعة باللون (<span id="modal-customer-color" style="color: var(--gold-primary);">أسود وذهبي</span>) لمدينة <span id="modal-customer-gov"></span>.
-      </p>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem;">
-        سيتواصل معك فريق خدمة العملاء على الرقم (<span id="modal-customer-phone"></span>) لتنسيق موعد الشحن.
-      </p>
-      <button class="btn-editorial" id="modal-close" style="width: 100%;">تم</button>
-    </div>
-  </div>
-
+  <script src="js/products.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
